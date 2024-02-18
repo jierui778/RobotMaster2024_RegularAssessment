@@ -85,7 +85,7 @@ extern IMU_TypeDef imu_data;
 
 uint8_t IST8310_Init(void);
 void IST8310_Read(IMU_TypeDef *imu);
-
+void BMI088_Read(IMU_TypeDef *imu);
 uint8_t BMI088_Init(void);
 
 #endif // __IMU_H
