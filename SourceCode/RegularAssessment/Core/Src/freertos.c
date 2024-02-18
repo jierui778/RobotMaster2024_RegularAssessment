@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "imu.h"
+#include "SEGGER_RTT.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -118,7 +119,8 @@ void StartDefaultTask(void *argument)
   for(;;)
   {
 	  IST8310_Read(&imu_data);
-    osDelay(1);
+	  SEGGER_RTT_printf(0, "segger !\n");  // 原接口
+    osDelay(1000);
   }
   /* USER CODE END StartDefaultTask */
 }

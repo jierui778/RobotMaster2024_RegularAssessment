@@ -30,6 +30,7 @@
 /* USER CODE BEGIN Includes */
 #include "Imu.h"
 
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -119,11 +120,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    IST8310_Read(&imu_data);
+    //IST8310_Read(&imu_data);
     // HAL_GPIO_TogglePin(LED_B_GPIO_Port, LED_B_Pin);
     // HAL_Delay(1000);
     // HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
-    HAL_Delay(100);
+
     //HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin);
   }
   /* USER CODE END 3 */
