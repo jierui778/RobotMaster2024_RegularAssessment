@@ -67,10 +67,10 @@ void Error_Handler(void);
 #define LED_G_GPIO_Port GPIOH
 #define LED_B_Pin GPIO_PIN_9
 #define LED_B_GPIO_Port GPIOH
-#define BMI088_Accel_CS_Pin GPIO_PIN_4
-#define BMI088_Accel_CS_GPIO_Port GPIOA
-#define BMI088_Gyro_CS_Pin GPIO_PIN_0
-#define BMI088_Gyro_CS_GPIO_Port GPIOB
+#define CS1_Accel_Pin GPIO_PIN_4
+#define CS1_Accel_GPIO_Port GPIOA
+#define CS1_Gyro_Pin GPIO_PIN_0
+#define CS1_Gyro_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

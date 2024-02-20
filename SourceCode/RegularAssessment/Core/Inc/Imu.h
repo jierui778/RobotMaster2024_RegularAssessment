@@ -75,17 +75,25 @@ typedef struct
     int16_t gyro[3];  // 陀螺仪
     int16_t accel[3]; // 加速度计
     int16_t mag[3];   // 磁力计
-    float angle_q[4];
-    float angle[3];
-    uint8_t temp;
-    int sensitivity;
-
+    float angle_q[4]; // 四元数
+    float angle[3];   // 欧拉角
+    uint8_t temp;     // 温度
 } IMU_TypeDef;
+
+typedef enum
+{
+    accel = 0,
+    gyro = 1
+} accel_or_gyro;
+
 extern IMU_TypeDef imu_data;
 
 uint8_t IST8310_Init(void);
 void IST8310_Read(IMU_TypeDef *imu);
-void BMI088_Read(IMU_TypeDef *imu);
+
 uint8_t BMI088_Init(void);
+void BMI088_Read(IMU_TypeDef *imu);
+void BMI088_ReadGyro(IMU_TypeDef *imu);
+void BMI088_ReadAccel(IMU_TypeDef *imu);
 
 #endif // __IMU_H

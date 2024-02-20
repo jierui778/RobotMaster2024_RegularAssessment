@@ -12,13 +12,11 @@
 #include "i2c.h"
 #include "spi.h"
 #include "main.h"
+uint8_t spi_TxData, spi_RxData;
+int16_t test = 6;
 
 static void IST8310_WriteByte(uint8_t reg, uint8_t data);
 static uint8_t IST8310_ReadByte(uint8_t reg);
-
-static void BMI088_WriteByte(uint8_t reg, uint8_t data);
-static void BMI088_ReadByte(uint8_t reg, uint8_t *data);
-
 IMU_TypeDef imu_data;
 
 /**
@@ -49,7 +47,7 @@ static uint8_t IST8310_ReadByte(uint8_t reg)
  */
 uint8_t IST8310_Init(void)
 {
-    int8_t data = 0;
+    // int8_t data = 0;
 
     /*重启磁力计*/
     HAL_GPIO_WritePin(IST8310_Reset_GPIO_Port, IST8310_Reset_Pin, GPIO_PIN_RESET);
@@ -82,6 +80,63 @@ void IST8310_Read(IMU_TypeDef *imu)
     imu->mag[1] = buf[2] + (buf[3] << 8);
     imu->mag[2] = buf[4] + (buf[5] << 8);
 }
+
+void BMI088_WriteByte(uint8_t reg, uint8_t data, accel_or_gyro mode)
+{
+    switch (mode)
+    {
+    case accel:
+        HAL_GPIO_WritePin(CS1_Accel_GPIO_Port, CS1_Accel_Pin, RESET);
+        break;
+    case gyro:
+        HAL_GPIO_WritePin(CS1_Gyro_GPIO_Port, CS1_Gyro_Pin, RESET);
+        break;
+    }
+    spi_TxData = reg & 0x7F; // bit0为0，向imu写
+    HAL_SPI_Transmit(&hspi1, &spi_TxData, 1, 500);
+    while (HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_BUSY_TX)
+        ;
+    HAL_SPI_Transmit(&hspi1, &data, 1, 500);
+    HAL_Delay(30);
+    switch (mode)
+    {
+    case accel:
+        HAL_GPIO_WritePin(CS1_Accel_GPIO_Port, CS1_Accel_Pin, SET);
+        break;
+    case gyro:
+        HAL_GPIO_WritePin(CS1_Gyro_GPIO_Port, CS1_Gyro_Pin, SET);
+        break;
+    }
+}
+
+void BMI088_write_byte(uint8_t write_data, uint8_t addr, accel_or_gyro a_enum)
+{
+    switch (a_enum)
+    {
+    case accel:
+        HAL_GPIO_WritePin(CS1_Accel_GPIO_Port, CS1_Accel_Pin, RESET);
+        break;
+    case gyro:
+        HAL_GPIO_WritePin(CS1_Gyro_GPIO_Port, CS1_Gyro_Pin, RESET);
+        break;
+    }
+    spi_TxData = addr & 0x7F; // bit0为0，向imu写
+    HAL_SPI_Transmit(&hspi1, &spi_TxData, 1, 500);
+    while (HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_BUSY_TX)
+        ;
+    HAL_SPI_Transmit(&hspi1, &write_data, 1, 500);
+    HAL_Delay(30);
+    switch (a_enum)
+    {
+    case accel:
+        HAL_GPIO_WritePin(CS1_Accel_GPIO_Port, CS1_Accel_Pin, SET);
+        break;
+    case gyro:
+        HAL_GPIO_WritePin(CS1_Gyro_GPIO_Port, CS1_Gyro_Pin, SET);
+        break;
+    }
+}
+
 /**
  * @brief BMI088初始化
  *
@@ -89,24 +144,80 @@ void IST8310_Read(IMU_TypeDef *imu)
  */
 uint8_t BMI088_Init(void)
 {
+    // 加速度计初始化
+    BMI088_write_byte(0xB6, 0x7E, accel); // 向0x7E写入0xb6以软件复位加速度计
+    BMI088_write_byte(0x04, 0x7D, accel); // 向0x7D写入0x04以取消加速度计暂停
+    BMI088_write_byte(0x00, 0x41, accel); // 设置量程为±3g
+    BMI088_write_byte(0x89, 0x40, accel);
+
+    // 陀螺仪初始化
+    BMI088_write_byte(0xB6, 0x14, gyro); // 向0x14写入0xb6以软件复位陀螺仪
+    BMI088_write_byte(0x00, 0x11, gyro);
+    BMI088_write_byte(GYRO_RANGE_500_DEG_S, GYRO_RANGE_ADDR, gyro); // ±500
+    BMI088_write_byte(GYRO_ODR_200Hz_BANDWIDTH_64Hz, GYRO_BANDWIDTH_ADDR, gyro);
     return 0;
 }
 
-static void BMI088_WriteByte(uint8_t reg, uint8_t data)
-{
-    HAL_SPI_Transmit(&hspi1, &reg, 1, 50);
-}
-
+/**
+ * @brief 读取BMI088陀螺仪数据
+ *
+ * @param imu
+ */
 void BMI088_ReadGyro(IMU_TypeDef *imu)
 {
-    uint8_t buf[6];
-    HAL_GPIO_WritePin(BMI088_Gyro_CS_GPIO_Port, BMI088_Accel_CS_Pin, GPIO_PIN_RESET); // 使能陀螺仪
-}
+    uint8_t temp_arr[6];
+    HAL_GPIO_WritePin(CS1_Gyro_GPIO_Port, CS1_Gyro_Pin, RESET);
+    spi_TxData = 0x02 | 0x80;                      // 使地�?第一位为1（读模式�?
+    HAL_SPI_Transmit(&hspi1, &spi_TxData, 1, 300); // 写入�?要读取的地址
+    //	while(HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_BUSY);
+    spi_TxData = 0x55;
+    for (int i = 0; i < 6; i++) // 接受读取信息
+    {
+        HAL_SPI_TransmitReceive(&hspi1, &spi_TxData, &spi_RxData, 1, 300);
+        temp_arr[i] = spi_RxData;
+        //		while(HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_BUSY);
+    }
 
+    imu->gyro[0] = (temp_arr[0] + (temp_arr[1] << 8));
+    imu->gyro[1] = (temp_arr[2] + (temp_arr[3] << 8));
+    imu->gyro[2] = (temp_arr[4] + (temp_arr[5] << 8));
+    HAL_GPIO_WritePin(CS1_Gyro_GPIO_Port, CS1_Gyro_Pin, SET); // 传输停止
+}
+/**
+ * @brief 读取BMI088加速度计数据
+ *
+ * @param imu
+ */
 void BMI088_ReadAccel(IMU_TypeDef *imu)
 {
-    uint8_t buf[6];
-    HAL_GPIO_WritePin(BMI088_Accel_CS_GPIO_Port, BMI088_Accel_CS_Pin, GPIO_PIN_RESET); // 使能加速度计
+    uint8_t temp_arr[6];
+    HAL_GPIO_WritePin(CS1_Accel_GPIO_Port, CS1_Accel_Pin, RESET);
+    spi_TxData = 0x12 | 0x80;                                          // 使地�?第一位为1（读模式�?
+    HAL_SPI_TransmitReceive(&hspi1, &spi_TxData, &spi_RxData, 1, 300); // 写入�?要读取的地址
+    spi_TxData = 0x12 | 0x80;                                          // 使地�?第一位为1（读模式�?
+    HAL_SPI_TransmitReceive(&hspi1, &spi_TxData, &spi_RxData, 1, 300); // 写入�?要读取的地址
+    spi_TxData = 0x55;
+    for (uint8_t i = 0; i < 6; i++)
+    {
+        HAL_SPI_TransmitReceive(&hspi1, &spi_TxData, &spi_RxData, 1, 300);
+        temp_arr[i] = spi_RxData;
+    }
+    imu->accel[0] = (temp_arr[0] + (temp_arr[1] << 8));
+    imu->accel[1] = (temp_arr[2] + (temp_arr[3] << 8));
+    imu->accel[2] = (temp_arr[4] + (temp_arr[5] << 8));
+
+    HAL_GPIO_WritePin(CS1_Accel_GPIO_Port, CS1_Accel_Pin, SET); // 传输停止
+}
+
+/**
+ * @brief 读取BMI088传感器温度
+ *
+ * @param imu
+ */
+void BMI088_ReadTemp(IMU_TypeDef *imu)
+{
+    //    uint8_t buf[2];
+    //    imu_data.temp = (int16_t)((buf[0] << 3) | (buf[1] >> 5)); // 温度
 }
 
 void IMU_Read(IMU_TypeDef *imu)
