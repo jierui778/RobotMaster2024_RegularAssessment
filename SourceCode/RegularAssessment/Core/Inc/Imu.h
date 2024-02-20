@@ -68,22 +68,22 @@
 #define IST8310_AVGCNTL_FOURTH 0x12
 
 #define IST8310_I2C_ADDR 0x0E // IST8310从机地址
-#define IST8310_ID 0x10       // IST8310的ID号
+#define IST8310_ID 0x10		  // IST8310的ID号
 
 typedef struct
 {
-    int16_t gyro[3];  // 陀螺仪
-    int16_t accel[3]; // 加速度计
-    int16_t mag[3];   // 磁力计
-    float angle_q[4]; // 四元数
-    float angle[3];   // 欧拉角
-    uint8_t temp;     // 温度
+	int16_t gyro[3];  // 陀螺仪
+	int16_t accel[3]; // 加速度计
+	int16_t mag[3];	  // 磁力计
+	float angle_q[4]; // 四元数
+	float angle[3];	  // 欧拉角
+	uint8_t temp;	  // 温度
 } IMU_TypeDef;
 
 typedef enum
 {
-    accel = 0,
-    gyro = 1
+	accel = 0,
+	gyro = 1
 } accel_or_gyro;
 
 extern IMU_TypeDef imu_data;
