@@ -27,6 +27,8 @@
 /* USER CODE BEGIN Includes */
 #include "imu.h"
 #include "SEGGER_RTT.h"
+#include "imu.h"
+#include "MahonyAHRS.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,9 +53,9 @@
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "defaultTask",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,11 +68,12 @@ void StartDefaultTask(void *argument);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
-void MX_FREERTOS_Init(void) {
+ * @brief  FreeRTOS initialization
+ * @param  None
+ * @retval None
+ */
+void MX_FREERTOS_Init(void)
+{
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -102,7 +105,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
-
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -112,18 +114,37 @@ void MX_FREERTOS_Init(void) {
  * @retval None
  */
 /* USER CODE END Header_StartDefaultTask */
+#define PI 3.14159265358979f
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
   for (;;)
   {
-		 BMI088_ReadGyro(&imu_data);
-		 BMI088_ReadAccel(&imu_data);
-		 IST8310_Read(&imu_data);
-    // SEGGER_RTT_printf(0, "segger !\n"); // 原接�?????
+    BMI088_ReadGyro(&imu_data);
+    BMI088_ReadAccel(&imu_data);
+    IST8310_Read(&imu_data);
+    // SEGGER_RTT_printf(0, "segger !\n"); //测试RTT接口打印功能
     HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
+    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运行
     osDelay(1000);
+    /*对数据进行转换*/
+    for (int i = 0; i < 3; i++)
+    {
+      imu_gyro[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180);
+      imu_accel[i] = imu_data.accel[i] * 0.0008974f;
+      imu_mag[i] = imu_data.mag[i]*0.3;
+    }
+    /***减去零偏值（零偏需标定获取）***/
+    imu_gyro[1] -= (11.5390333f / 65.536) * (PI / 180);
+    imu_gyro[2] -= (10.4231017f / 65.536) * (PI / 180);
+    imu_accel[1] -= (141.763613f * 0.0008974);
+
+    /***均值滤波***/
+    MahonyAHRSupdateIMU(imu_data.angle_q, imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2]);
+    imu_data.angle[0] = atan2f(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[3] + imu_data.angle_q[1] * imu_data.angle_q[2]), 2.0f * (imu_data.angle_q[0] * imu_data.angle_q[0] + imu_data.angle_q[1] * imu_data.angle_q[1]) - 1.0f);
+    imu_data.angle[1] = asinf(-2.0f * (imu_data.angle_q[1] * imu_data.angle_q[3] - imu_data.angle_q[0] * imu_data.angle_q[2]));
+    imu_data.angle[2] = atan2f(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[3]), 2.0f * (imu_data.angle_q[0] * imu_data.angle_q[0] + imu_data.angle_q[3] * imu_data.angle_q[3]) - 1.0f);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -132,4 +153,3 @@ void StartDefaultTask(void *argument)
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
-

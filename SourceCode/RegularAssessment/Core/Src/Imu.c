@@ -14,6 +14,7 @@
 #include "main.h"
 uint8_t spi_TxData, spi_RxData;
 int16_t test = 6;
+float imu_gyro[3], imu_accel[3], imu_mag[3];
 
 enum BMI088_WriteMode
 {
@@ -194,7 +195,6 @@ void BMI088_ReadAccel(IMU_TypeDef *imu)
  */
 void BMI088_ReadTemp(IMU_TypeDef *imu)
 {
-
 }
 
 void IMU_Read(IMU_TypeDef *imu)

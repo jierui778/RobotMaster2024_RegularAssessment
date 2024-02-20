@@ -87,7 +87,7 @@ typedef enum
 } accel_or_gyro;
 
 extern IMU_TypeDef imu_data;
-
+extern float imu_gyro[3], imu_accel[3], imu_mag[3];
 uint8_t IST8310_Init(void);
 void IST8310_Read(IMU_TypeDef *imu);
 
