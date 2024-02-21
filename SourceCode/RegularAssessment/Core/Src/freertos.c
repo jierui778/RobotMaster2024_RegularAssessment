@@ -27,7 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "imu.h"
 #include "SEGGER_RTT.h"
-#include "imu.h"
+#include "math.h"
 #include "MahonyAHRS.h"
 /* USER CODE END Includes */
 
@@ -53,16 +53,16 @@
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "defaultTask",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 /* Definitions for myTask02 */
 osThreadId_t myTask02Handle;
 const osThreadAttr_t myTask02_attributes = {
-  .name = "myTask02",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow,
+    .name = "myTask02",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityLow,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -83,21 +83,21 @@ unsigned long getRunTimeCounterValue(void);
 /* Functions needed when configGENERATE_RUN_TIME_STATS is on */
 __weak void configureTimerForRunTimeStats(void)
 {
-
 }
 
 __weak unsigned long getRunTimeCounterValue(void)
 {
-return 0;
+  return 0;
 }
 /* USER CODE END 1 */
 
 /**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
-void MX_FREERTOS_Init(void) {
+ * @brief  FreeRTOS initialization
+ * @param  None
+ * @retval None
+ */
+void MX_FREERTOS_Init(void)
+{
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -132,7 +132,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
-
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -142,6 +141,7 @@ void MX_FREERTOS_Init(void) {
  * @retval None
  */
 /* USER CODE END Header_StartDefaultTask */
+#define PI 3.1415926
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
@@ -153,41 +153,46 @@ void StartDefaultTask(void *argument)
     IST8310_Read(&imu_data);
     // SEGGER_RTT_printf(0, "segger !\n"); //测试RTT接口打印功能
     HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
-    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运�??
-    osDelay(1000);
-    /*对数据进行转�??*/
-//    for (int i = 0; i < 3; i++)
-//    {
-//      imu_gyro[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180);
-//      imu_accel[i] = imu_data.accel[i] * 0.0008974f;
-//      imu_mag[i] = imu_data.mag[i]*0.3;
-//    }
-//    /***减去零偏值（零偏�??标定获取�??***/
-//    imu_gyro[1] -= (11.5390333f / 65.536) * (PI / 180);
-//    imu_gyro[2] -= (10.4231017f / 65.536) * (PI / 180);
-//    imu_accel[1] -= (141.763613f * 0.0008974);
-//
-//    /***均�?�滤�??***/
-//    MahonyAHRSupdateIMU(imu_data.angle_q, imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2]);
-//    imu_data.angle[0] = atan2f(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[3] + imu_data.angle_q[1] * imu_data.angle_q[2]), 2.0f * (imu_data.angle_q[0] * imu_data.angle_q[0] + imu_data.angle_q[1] * imu_data.angle_q[1]) - 1.0f);
-//    imu_data.angle[1] = asinf(-2.0f * (imu_data.angle_q[1] * imu_data.angle_q[3] - imu_data.angle_q[0] * imu_data.angle_q[2]));
-//    imu_data.angle[2] = atan2f(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[3]), 2.0f * (imu_data.angle_q[0] * imu_data.angle_q[0] + imu_data.angle_q[3] * imu_data.angle_q[3]) - 1.0f);
+    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运行
+                                                    //    osDelay(1000);
+    /* 对数据进行转换 */
+    for (int i = 0; i < 3; i++)
+    {
+      imu_gyro[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180);
+      imu_accel[i] = imu_data.accel[i] * 0.0008974f;
+      imu_mag[i] = imu_data.mag[i] * 0.3;
     }
+    /***减去零偏值（零偏�??标定获取�??***/
+    imu_gyro[1] -= (11.5390333f / 65.536) * (PI / 180);
+    imu_gyro[2] -= (10.4231017f / 65.536) * (PI / 180);
+    //    imu_accel[1] -= (141.763613f * 0.0008974);
+
+    MahonyAHRSupdateIMU(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2]);
+    imu_data.angle_q[0] = q0;
+    imu_data.angle_q[1] = q1;
+    imu_data.angle_q[2] = q2;
+    imu_data.angle_q[3] = q3;
+
+    // 四元数计算欧拉角
+    imu_data.angle[0] = (atan2(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[3]), 1 - 2.0f * (imu_data.angle_q[1] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[2]))) * 180 / PI;
+    imu_data.angle[1] = asin(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[2] - imu_data.angle_q[1] * imu_data.angle_q[3])) * 180 / PI;
+    imu_data.angle[2] = atan2(2 * imu_data.angle_q[1] * imu_data.angle_q[2] + 2 * imu_data.angle_q[0] * imu_data.angle_q[3], -2 * imu_data.angle_q[2] * imu_data.angle_q[2] - 2 * imu_data.angle_q[3] * imu_data.angle_q[3] + 1) * 180 / PI; // yaw
+  }
   /* USER CODE END StartDefaultTask */
 }
 
 /* USER CODE BEGIN Header_StartTask02 */
 /**
-* @brief Function implementing the myTask02 thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the myTask02 thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartTask02 */
 void StartTask02(void *argument)
 {
   /* USER CODE BEGIN StartTask02 */
   /* Infinite loop */
-  for(;;)
+  for (;;)
   {
     osDelay(1);
   }
@@ -198,4 +203,3 @@ void StartTask02(void *argument)
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
-
