@@ -70,6 +70,8 @@
 #define IST8310_I2C_ADDR 0x0E // IST8310从机地址
 #define IST8310_ID 0x10		  // IST8310的ID号
 
+#define PI 3.1415926f
+
 typedef struct
 {
 	int16_t gyro[3];  // 陀螺仪

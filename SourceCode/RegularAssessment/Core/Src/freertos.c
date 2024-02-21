@@ -62,7 +62,7 @@ osThreadId_t myTask02Handle;
 const osThreadAttr_t myTask02_attributes = {
     .name = "myTask02",
     .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
+    .priority = (osPriority_t)osPriorityLow6,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -141,7 +141,6 @@ void MX_FREERTOS_Init(void)
  * @retval None
  */
 /* USER CODE END Header_StartDefaultTask */
-#define PI 3.1415926
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
@@ -153,21 +152,22 @@ void StartDefaultTask(void *argument)
     IST8310_Read(&imu_data);
     // SEGGER_RTT_printf(0, "segger !\n"); //测试RTT接口打印功能
     HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
-    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运行
+    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运�?
                                                     //    osDelay(1000);
-    /* 对数据进行转换 */
+    /* 对数据进行转�? */
     for (int i = 0; i < 3; i++)
     {
       imu_gyro[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180);
       imu_accel[i] = imu_data.accel[i] * 0.0008974f;
       imu_mag[i] = imu_data.mag[i] * 0.3;
     }
-    /***减去零偏值（零偏�??标定获取�??***/
+    /*去零�?*/
     imu_gyro[1] -= (11.5390333f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4231017f / 65.536) * (PI / 180);
     //    imu_accel[1] -= (141.763613f * 0.0008974);
 
     MahonyAHRSupdateIMU(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2]);
+    // MahonyAHRSupdate(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2], imu_mag[0], imu_mag[1], imu_mag[2]);
     imu_data.angle_q[0] = q0;
     imu_data.angle_q[1] = q1;
     imu_data.angle_q[2] = q2;
