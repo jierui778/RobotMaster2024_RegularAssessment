@@ -29,6 +29,7 @@
 #include "SEGGER_RTT.h"
 #include "math.h"
 #include "MahonyAHRS.h"
+#include "semphr.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,6 +65,27 @@ const osThreadAttr_t myTask02_attributes = {
     .stack_size = 128 * 4,
     .priority = (osPriority_t)osPriorityLow6,
 };
+/* Definitions for myTask03 */
+osThreadId_t myTask03Handle;
+const osThreadAttr_t myTask03_attributes = {
+    .name = "myTask03",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityLow,
+};
+/* Definitions for myTask04 */
+osThreadId_t myTask04Handle;
+const osThreadAttr_t myTask04_attributes = {
+    .name = "myTask04",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityLow,
+};
+/* Definitions for myTask05 */
+osThreadId_t myTask05Handle;
+const osThreadAttr_t myTask05_attributes = {
+    .name = "myTask05",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityLow,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -72,6 +94,9 @@ const osThreadAttr_t myTask02_attributes = {
 
 void StartDefaultTask(void *argument);
 void StartTask02(void *argument);
+void StartTask03(void *argument);
+void StartTask04(void *argument);
+void StartTask05(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -125,6 +150,15 @@ void MX_FREERTOS_Init(void)
   /* creation of myTask02 */
   myTask02Handle = osThreadNew(StartTask02, NULL, &myTask02_attributes);
 
+  /* creation of myTask03 */
+  myTask03Handle = osThreadNew(StartTask03, NULL, &myTask03_attributes);
+
+  /* creation of myTask04 */
+  myTask04Handle = osThreadNew(StartTask04, NULL, &myTask04_attributes);
+
+  /* creation of myTask05 */
+  myTask05Handle = osThreadNew(StartTask05, NULL, &myTask05_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -151,19 +185,20 @@ void StartDefaultTask(void *argument)
     BMI088_ReadAccel(&imu_data);
     IST8310_Read(&imu_data);
     // SEGGER_RTT_printf(0, "segger !\n"); //测试RTT接口打印功能
-    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
-    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运�?
-                                                    //    osDelay(1000);
-    /* 对数据进行转�? */
+    //    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
+    //    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运�??
+    //    osDelay(1000);
+    /* 对数据进行转�?? */
     for (int i = 0; i < 3; i++)
     {
       imu_gyro[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180);
       imu_accel[i] = imu_data.accel[i] * 0.0008974f;
       imu_mag[i] = imu_data.mag[i] * 0.3;
     }
-    /*去零�?*/
+    /*去零飘*/
     imu_gyro[1] -= (11.5390333f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4231017f / 65.536) * (PI / 180);
+    imu_gyro[2] -= (10.4288017f / 65.536) * (PI / 180);
     //    imu_accel[1] -= (141.763613f * 0.0008974);
 
     MahonyAHRSupdateIMU(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2]);
@@ -177,6 +212,7 @@ void StartDefaultTask(void *argument)
     imu_data.angle[0] = (atan2(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[3]), 1 - 2.0f * (imu_data.angle_q[1] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[2]))) * 180 / PI;
     imu_data.angle[1] = asin(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[2] - imu_data.angle_q[1] * imu_data.angle_q[3])) * 180 / PI;
     imu_data.angle[2] = atan2(2 * imu_data.angle_q[1] * imu_data.angle_q[2] + 2 * imu_data.angle_q[0] * imu_data.angle_q[3], -2 * imu_data.angle_q[2] * imu_data.angle_q[2] - 2 * imu_data.angle_q[3] * imu_data.angle_q[3] + 1) * 180 / PI; // yaw
+    osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -188,15 +224,71 @@ void StartDefaultTask(void *argument)
  * @retval None
  */
 /* USER CODE END Header_StartTask02 */
+static SemaphoreHandle_t g_xSemTicks;
 void StartTask02(void *argument)
 {
   /* USER CODE BEGIN StartTask02 */
+  g_xSemTicks = xSemaphoreCreateCounting(3, 2);
   /* Infinite loop */
   for (;;)
   {
     osDelay(1);
   }
   /* USER CODE END StartTask02 */
+}
+
+/* USER CODE BEGIN Header_StartTask03 */
+/**
+ * @brief Function implementing the myTask03 thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_StartTask03 */
+void StartTask03(void *argument)
+{
+  /* USER CODE BEGIN StartTask03 */
+  /* Infinite loop */
+  for (;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTask03 */
+}
+
+/* USER CODE BEGIN Header_StartTask04 */
+/**
+ * @brief Function implementing the myTask04 thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_StartTask04 */
+void StartTask04(void *argument)
+{
+  /* USER CODE BEGIN StartTask04 */
+  /* Infinite loop */
+  for (;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTask04 */
+}
+
+/* USER CODE BEGIN Header_StartTask05 */
+/**
+ * @brief Function implementing the myTask05 thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_StartTask05 */
+void StartTask05(void *argument)
+{
+  /* USER CODE BEGIN StartTask05 */
+  /* Infinite loop */
+  for (;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTask05 */
 }
 
 /* Private application code --------------------------------------------------*/

@@ -20,6 +20,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "can.h"
+#include "dma.h"
 #include "i2c.h"
 #include "spi.h"
 #include "usart.h"
@@ -35,7 +36,8 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+uint8_t txdata[8] = {76, 79, 79, 80, 66, 65, 67, 75};
+uint8_t rxdata[8];
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -89,11 +91,11 @@ int main(void)
 
   /* USER CODE BEGIN SysInit */
 
-
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_I2C3_Init();
   MX_SPI1_Init();
   MX_CAN1_Init();
@@ -101,7 +103,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
   IST8310_Init();
   BMI088_Init();
-  //vTraceEnable(TRC_START);//启动任务跟踪
+  SEGGER_RTT_Init();
+  // vTraceEnable(TRC_START);//启动任务跟踪
 
   /* USER CODE END 2 */
 
@@ -174,6 +177,27 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM7 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM7) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
