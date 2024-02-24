@@ -104,7 +104,7 @@ int main(void)
   IST8310_Init();
   BMI088_Init();
   SEGGER_RTT_Init();
-  // vTraceEnable(TRC_START);//启动任务跟踪
+  //vTraceEnable(TRC_START);//启动任务跟踪
 
   /* USER CODE END 2 */
 

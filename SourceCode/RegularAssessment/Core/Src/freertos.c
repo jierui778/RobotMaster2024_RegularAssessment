@@ -232,7 +232,10 @@ void StartTask02(void *argument)
   /* Infinite loop */
   for (;;)
   {
-    osDelay(1);
+    SEGGER_RTT_printf(0, "segger !\n"); // 测试RTT接口打印功能
+    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
+    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明系统正常运行
+    osDelay(1000);
   }
   /* USER CODE END StartTask02 */
 }

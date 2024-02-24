@@ -56,10 +56,10 @@
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/RTT/Inc"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/RTT"/>
-									<listOptionValue builtIn="false" value="&quot;D:\Personal Data\RM\RobotMaster2024_RegularAssessment\SourceCode\RegularAssessment\Middlewares\Third_Party\TraceRecorder\config&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;D:\Personal Data\RM\RobotMaster2024_RegularAssessment\SourceCode\RegularAssessment\Middlewares\Third_Party\TraceRecorder\include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;D:\Personal Data\RM\RobotMaster2024_RegularAssessment\SourceCode\RegularAssessment\Middlewares\Third_Party\TraceRecorder\streamports\Jlink_RTT\config&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;D:\Personal Data\RM\RobotMaster2024_RegularAssessment\SourceCode\RegularAssessment\Middlewares\Third_Party\TraceRecorder\streamports\Jlink_RTT\include&quot;"/>
+									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/TraceRecorder/config"/>
+									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/TraceRecorder/include"/>
+									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/TraceRecorder/streamports/Jlink_RTT/config"/>
+									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/TraceRecorder/streamports/Jlink_RTT/include"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.66723774" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
