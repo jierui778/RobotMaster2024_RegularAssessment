@@ -25,9 +25,9 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
     if (huart == &huart1)
     {
-        printf("Received data: %s\n", rx_buffer);   // 打印接收到的数据
-        printf("Received data length: %d\n", Size); // 打印接收到的数据长度
-        // HAL_UART_Transmit_DMA(&huart1, rx_buffer, Size);                       // 通过DMA发送接收到的数据
+         HAL_UART_Transmit_DMA(&huart1, rx_buffer, Size);
+         //HAL_UART_Transmit_DMA(&huart1, &Size, 2);
+         // 通过DMA发送接收到的数据
         HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer)); // 重新启动DMA接收
         //__HAL_DMA_DISABLE(&hdma_usart1_rx); // 关闭DMA
     }
