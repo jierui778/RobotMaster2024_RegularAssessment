@@ -31,13 +31,13 @@
 #include "Imu.h"
 #include "trcRecorder.h"
 #include "SEGGER_RTT.h"
+#include "remote.h"
+#include "stdio.h"
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-uint8_t txdata[8] = {76, 79, 79, 80, 66, 65, 67, 75};
-uint8_t rxdata[8];
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -104,7 +104,11 @@ int main(void)
   IST8310_Init();
   BMI088_Init();
   SEGGER_RTT_Init();
-  //vTraceEnable(TRC_START);//启动任务跟踪
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
+  //  printf("Hello World\n");
+  //  uint8_t test[6]="testtt";
+  //  HAL_UART_Transmit(&huart1, test, 6, 0xffff);
+  // vTraceEnable(TRC_START);//启动任务跟踪
 
   /* USER CODE END 2 */
 

@@ -21,6 +21,9 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
+#include<stdarg.h>
+#include<stdio.h>
+#include<string.h>
 #include "stdio.h"
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
@@ -178,5 +181,15 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+void u1_printf(char* buf,...)
+{
+	const char *p = buf;
+	char str[255] = {0};
+	va_list v;
+	va_start(v,buf);
+	vsprintf(str,buf,v);
+    HAL_UART_Transmit(&huart1, str, strlen(str), HAL_MAX_DELAY);
+    va_end(v);
+}
 
 /* USER CODE END 1 */

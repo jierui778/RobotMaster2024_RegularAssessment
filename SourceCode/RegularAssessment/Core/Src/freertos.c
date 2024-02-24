@@ -30,6 +30,8 @@
 #include "math.h"
 #include "MahonyAHRS.h"
 #include "semphr.h"
+#include "usart.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,37 +56,37 @@
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityNormal,
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for myTask02 */
 osThreadId_t myTask02Handle;
 const osThreadAttr_t myTask02_attributes = {
-    .name = "myTask02",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow6,
+  .name = "myTask02",
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityLow6,
 };
 /* Definitions for myTask03 */
 osThreadId_t myTask03Handle;
 const osThreadAttr_t myTask03_attributes = {
-    .name = "myTask03",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
+  .name = "myTask03",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for myTask04 */
 osThreadId_t myTask04Handle;
 const osThreadAttr_t myTask04_attributes = {
-    .name = "myTask04",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
+  .name = "myTask04",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for myTask05 */
 osThreadId_t myTask05Handle;
 const osThreadAttr_t myTask05_attributes = {
-    .name = "myTask05",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
+  .name = "myTask05",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -117,12 +119,11 @@ __weak unsigned long getRunTimeCounterValue(void)
 /* USER CODE END 1 */
 
 /**
- * @brief  FreeRTOS initialization
- * @param  None
- * @retval None
- */
-void MX_FREERTOS_Init(void)
-{
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
+void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -166,6 +167,7 @@ void MX_FREERTOS_Init(void)
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
+
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -186,16 +188,16 @@ void StartDefaultTask(void *argument)
     IST8310_Read(&imu_data);
     // SEGGER_RTT_printf(0, "segger !\n"); //测试RTT接口打印功能
     //    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
-    //    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运�??
+    //    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运�????????
     //    osDelay(1000);
-    /* 对数据进行转�?? */
+    /* 对数据进行转�???????? */
     for (int i = 0; i < 3; i++)
     {
       imu_gyro[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180);
       imu_accel[i] = imu_data.accel[i] * 0.0008974f;
       imu_mag[i] = imu_data.mag[i] * 0.3;
     }
-    /*去零飘*/
+    /*去零�??????*/
     imu_gyro[1] -= (11.5390333f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4231017f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4288017f / 65.536) * (PI / 180);
@@ -212,6 +214,7 @@ void StartDefaultTask(void *argument)
     imu_data.angle[0] = (atan2(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[3]), 1 - 2.0f * (imu_data.angle_q[1] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[2]))) * 180 / PI;
     imu_data.angle[1] = asin(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[2] - imu_data.angle_q[1] * imu_data.angle_q[3])) * 180 / PI;
     imu_data.angle[2] = atan2(2 * imu_data.angle_q[1] * imu_data.angle_q[2] + 2 * imu_data.angle_q[0] * imu_data.angle_q[3], -2 * imu_data.angle_q[2] * imu_data.angle_q[2] - 2 * imu_data.angle_q[3] * imu_data.angle_q[3] + 1) * 180 / PI; // yaw
+    //HAL_UART_Transmit_DMA(&huart1, imu_data.angle[0], 12);
     osDelay(1);
   }
   /* USER CODE END StartDefaultTask */
@@ -224,18 +227,33 @@ void StartDefaultTask(void *argument)
  * @retval None
  */
 /* USER CODE END Header_StartTask02 */
-static SemaphoreHandle_t g_xSemTicks;
 void StartTask02(void *argument)
 {
   /* USER CODE BEGIN StartTask02 */
-  g_xSemTicks = xSemaphoreCreateCounting(3, 2);
+  uint8_t ret, i;
+  float test = 8.888888;
   /* Infinite loop */
   for (;;)
   {
-    SEGGER_RTT_printf(0, "segger !\n"); // 测试RTT接口打印功能
+//	printf("%d",test);
     HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
     HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明系统正常运行
-    osDelay(1000);
+    u1_printf("%d,%d,%d\n",(int16_t)imu_data.angle[0],(int16_t)imu_data.angle[1],(int16_t)imu_data.angle[2]);
+    // HAL_UART_Transmit_DMA(&huart1, "RoboMaster\r\n", 12);
+//    u1_printf("%d,%d,%d",6,6,6);
+
+    // HAL_UART_Transmit(&huart1, "RoboMaster\r\n", 12, 0xfff);
+    //  ret = CAN1_Send_Msg(txdata, 8);
+    //  if (ret == 0)
+    //    SEGGER_RTT_printf(0, "CAN Send success!\r\n");
+    //  else
+    //    SEGGER_RTT_printf(0, "CAN Send failed!\r\n");
+
+    // CAN1_Recv_Msg(rxdata);
+    // // SEGGER_RTT_printf(0, "+++++++++++++++++++++++++++++++\r\n");
+    // HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
+    // HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明系统正常运行
+    osDelay(10);
   }
   /* USER CODE END StartTask02 */
 }
@@ -298,3 +316,4 @@ void StartTask05(void *argument)
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
+
