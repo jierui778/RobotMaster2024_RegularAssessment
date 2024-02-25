@@ -19,9 +19,10 @@ SCNU 2024电控组转正考核任务
 
 </details>
 
+- 采用DMA方式回传串口数据和数据长度如图
 <!--调整图片大小并居中显示-->
 <center class ='img'>
-<img src="./gif/串口发送不定长数据.gif"  width = 80%>
+<img src="./gif/串口发送并回传不定长数据.gif"  width = 80%>
 </center>
 
 ## 陀螺仪的使用
@@ -41,9 +42,24 @@ SCNU 2024电控组转正考核任务
 
 </details>
 
-任务实现方法
+</details>
+<details><summary>实现方法<em><b> </b> </em></summary>
 
-- 融合九轴数据（陀螺仪+加速度计+磁力计）
+- 融合六轴数据（陀螺仪+加速度，融合九轴数据效果较差）
 - 采用MahonyAHRS（一阶互补滤波算法）对姿态传感器数据进行融合
+
+</details>
+
+- 原始数据读取
+
+<center class = 'img'>
+<img src = "./gif/imu原始数据读取.gif" width = 80%>
+</center>
+
+- MahonyAHRS滤波解算效果及数据漂移
+
+<center class = 'img'>
+<img src = "./gif/Mahony滤波3D演示.gif" width = 80%>
+</center>
 
 ## CAN总线电机的使用
