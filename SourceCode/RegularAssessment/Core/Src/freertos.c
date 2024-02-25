@@ -181,6 +181,8 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
+  TickType_t xLastWakeTime;
+  xLastWakeTime = xTaskGetTickCount(); // 获取当前时间
   for (;;)
   {
     BMI088_ReadGyro(&imu_data);
@@ -188,23 +190,23 @@ void StartDefaultTask(void *argument)
     IST8310_Read(&imu_data);
     // SEGGER_RTT_printf(0, "segger !\n"); //测试RTT接口打印功能
     //    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
-    //    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运行
+    //    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运�?
     //    osDelay(1000);
-    /* 对数据进行转换 */
+    /* 对数据进行转换*/
     for (int i = 0; i < 3; i++)
     {
       imu_gyro[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180);
       imu_accel[i] = imu_data.accel[i] * 0.0008974f;
       imu_mag[i] = imu_data.mag[i] * 0.3;
     }
-    /*去零漂*/
+    /*去零飘*/
     imu_gyro[1] -= (11.5390333f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4231017f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4288017f / 65.536) * (PI / 180);
     //    imu_accel[1] -= (141.763613f * 0.0008974);
 
-    MahonyAHRSupdateIMU(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2]);
-    // MahonyAHRSupdate(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2], imu_mag[0], imu_mag[1], imu_mag[2]);
+    MahonyAHRSupdateIMU(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2]); // 融合六轴数据
+    // MahonyAHRSupdate(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2], imu_mag[0], imu_mag[1], imu_mag[2]);//融合九轴数据
     imu_data.angle_q[0] = q0;
     imu_data.angle_q[1] = q1;
     imu_data.angle_q[2] = q2;
@@ -215,7 +217,8 @@ void StartDefaultTask(void *argument)
     imu_data.angle[1] = asin(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[2] - imu_data.angle_q[1] * imu_data.angle_q[3])) * 180 / PI;
     imu_data.angle[2] = atan2(2 * imu_data.angle_q[1] * imu_data.angle_q[2] + 2 * imu_data.angle_q[0] * imu_data.angle_q[3], -2 * imu_data.angle_q[2] * imu_data.angle_q[2] - 2 * imu_data.angle_q[3] * imu_data.angle_q[3] + 1) * 180 / PI; // yaw
     // HAL_UART_Transmit_DMA(&huart1, imu_data.angle[0], 12);
-    osDelay(1);
+    // osDelay(1);
+    vTaskDelayUntil(&xLastWakeTime, 1); // 任务延时1ms
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -236,7 +239,7 @@ void StartTask02(void *argument)
     //	printf("%d",test);
     HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
     HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明系统正常运行
-    u1_printf("%d,%d,%d\n", -(int16_t)imu_data.angle[0], (int16_t)imu_data.angle[1], (int16_t)imu_data.angle[2]);
+                                                    //    u1_printf("%d,%d,%d\n", -(int16_t)imu_data.angle[0], (int16_t)imu_data.angle[1], (int16_t)imu_data.angle[2]);
     // u1_printf("%.2f,%.2f,%.2f\n",-(int16_t)imu_data.angle_q[0],(int16_t)imu_data.angle_q[1],(int16_t)imu_data.angle_q[2]);
     //  HAL_UART_Transmit_DMA(&huart1, "RoboMaster\r\n", 12);
     //    u1_printf("%d,%d,%d",6,6,6);
@@ -252,7 +255,7 @@ void StartTask02(void *argument)
     // // SEGGER_RTT_printf(0, "+++++++++++++++++++++++++++++++\r\n");
     // HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
     // HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明系统正常运行
-    osDelay(10);
+    osDelay(1000);
   }
   /* USER CODE END StartTask02 */
 }

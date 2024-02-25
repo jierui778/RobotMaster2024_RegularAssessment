@@ -108,7 +108,7 @@ int main(void)
   //  printf("Hello World\n");
   //  uint8_t test[6]="testtt";
   //  HAL_UART_Transmit(&huart1, test, 6, 0xffff);
-  // vTraceEnable(TRC_START);//启动任务跟踪
+  vTraceEnable(TRC_START);//启动任务跟踪
 
   /* USER CODE END 2 */
 

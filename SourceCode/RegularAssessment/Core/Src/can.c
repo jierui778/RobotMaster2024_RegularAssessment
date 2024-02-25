@@ -58,18 +58,17 @@ void MX_CAN1_Init(void)
   HAL_CAN_Start(&hcan1);
 
   /* USER CODE END CAN1_Init 2 */
-
 }
 
-void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
+void HAL_CAN_MspInit(CAN_HandleTypeDef *canHandle)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if(canHandle->Instance==CAN1)
+  if (canHandle->Instance == CAN1)
   {
-  /* USER CODE BEGIN CAN1_MspInit 0 */
+    /* USER CODE BEGIN CAN1_MspInit 0 */
 
-  /* USER CODE END CAN1_MspInit 0 */
+    /* USER CODE END CAN1_MspInit 0 */
     /* CAN1 clock enable */
     __HAL_RCC_CAN1_CLK_ENABLE();
 
@@ -78,7 +77,7 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
     PD0     ------> CAN1_RX
     PD1     ------> CAN1_TX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1;
+    GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -94,20 +93,20 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
     HAL_NVIC_EnableIRQ(CAN1_RX1_IRQn);
     HAL_NVIC_SetPriority(CAN1_SCE_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(CAN1_SCE_IRQn);
-  /* USER CODE BEGIN CAN1_MspInit 1 */
+    /* USER CODE BEGIN CAN1_MspInit 1 */
 
-  /* USER CODE END CAN1_MspInit 1 */
+    /* USER CODE END CAN1_MspInit 1 */
   }
 }
 
-void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
+void HAL_CAN_MspDeInit(CAN_HandleTypeDef *canHandle)
 {
 
-  if(canHandle->Instance==CAN1)
+  if (canHandle->Instance == CAN1)
   {
-  /* USER CODE BEGIN CAN1_MspDeInit 0 */
+    /* USER CODE BEGIN CAN1_MspDeInit 0 */
 
-  /* USER CODE END CAN1_MspDeInit 0 */
+    /* USER CODE END CAN1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_CAN1_CLK_DISABLE();
 
@@ -115,19 +114,39 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
     PD0     ------> CAN1_RX
     PD1     ------> CAN1_TX
     */
-    HAL_GPIO_DeInit(GPIOD, GPIO_PIN_0|GPIO_PIN_1);
+    HAL_GPIO_DeInit(GPIOD, GPIO_PIN_0 | GPIO_PIN_1);
 
     /* CAN1 interrupt Deinit */
     HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);
     HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);
     HAL_NVIC_DisableIRQ(CAN1_RX1_IRQn);
     HAL_NVIC_DisableIRQ(CAN1_SCE_IRQn);
-  /* USER CODE BEGIN CAN1_MspDeInit 1 */
+    /* USER CODE BEGIN CAN1_MspDeInit 1 */
 
-  /* USER CODE END CAN1_MspDeInit 1 */
+    /* USER CODE END CAN1_MspDeInit 1 */
   }
 }
 
 /* USER CODE BEGIN 1 */
+
+/**
+ * @brief 配置CAN滤波器
+ *
+ */
+void CanFilterConfig(void)
+{
+  CAN_FilterTypeDef can_filter;
+  can_filter.FilterBank = 0;
+  can_filter.FilterActivation = ENABLE;           // 使能滤波器
+  can_filter.FilterMode = CAN_FILTERMODE_IDMASK;  // 屏蔽位模式
+  can_filter.FilterScale = CAN_FILTERSCALE_32BIT; // 32位滤波器
+  can_filter.FilterIdHigh = 0x0000;               // 32位ID
+  can_filter.FilterIdLow = 0x0000;                // 32位ID
+  can_filter.FilterMaskIdHigh = 0x0000;           // 32位屏蔽位
+  can_filter.FilterMaskIdLow = 0x0000;            // 32位屏蔽位
+  can_filter.FilterFIFOAssignment = CAN_RX_FIFO0; // 过滤器关联到FIFO0
+  HAL_CAN_ConfigFilter(&hcan1, &can_filter);      // 滤波器关联到CAN1
+  can_filter.FilterBank = 15;                     // 滤波器组1
+}
 
 /* USER CODE END 1 */

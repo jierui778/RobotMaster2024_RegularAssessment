@@ -216,7 +216,7 @@ extern "C" {
  * @brief The stack size of the Tracealyzer Control (TzCtrl) task.
  * See TRC_CFG_CTRL_TASK_PRIORITY for further information about TzCtrl.
  */
-#define TRC_CFG_CTRL_TASK_STACK_SIZE 1024
+#define TRC_CFG_CTRL_TASK_STACK_SIZE 4096
 
 /**
  * @def TRC_CFG_RECORDER_BUFFER_ALLOCATION
