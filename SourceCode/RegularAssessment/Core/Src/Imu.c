@@ -24,7 +24,7 @@ enum BMI088_WriteMode
 
 static void IST8310_WriteByte(uint8_t reg, uint8_t data);
 static uint8_t IST8310_ReadByte(uint8_t reg);
-static void BMI088_WriteByte(uint8_t write_data, uint8_t addr, enum BMI088_WriteMode a_enum);
+static void BMI088_WriteByte(uint8_t addr, uint8_t data, enum BMI088_WriteMode a_enum);
 
 IMU_TypeDef imu_data;
 
@@ -90,7 +90,7 @@ void IST8310_Read(IMU_TypeDef *imu)
 	imu->mag[2] = buf[4] + (buf[5] << 8);
 }
 
-static void BMI088_WriteByte(uint8_t write_data, uint8_t addr, enum BMI088_WriteMode a_enum)
+static void BMI088_WriteByte(uint8_t addr, uint8_t data, enum BMI088_WriteMode a_enum)
 {
 	switch (a_enum)
 	{
@@ -105,7 +105,7 @@ static void BMI088_WriteByte(uint8_t write_data, uint8_t addr, enum BMI088_Write
 	HAL_SPI_Transmit(&hspi1, &spi_TxData, 1, 500);
 	while (HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_BUSY_TX)
 		;
-	HAL_SPI_Transmit(&hspi1, &write_data, 1, 500);
+	HAL_SPI_Transmit(&hspi1, &data, 1, 500);
 	HAL_Delay(30);
 	switch (a_enum)
 	{
@@ -125,17 +125,17 @@ static void BMI088_WriteByte(uint8_t write_data, uint8_t addr, enum BMI088_Write
  */
 uint8_t BMI088_Init(void)
 {
-	// 加速度计初始化
-	BMI088_WriteByte(0xB6, 0x7E, AccelWrite); // 向0x7E写入0xb6以软件复位加速度计
-	BMI088_WriteByte(0x04, 0x7D, AccelWrite); // 向0x7D写入0x04以取消加速度计暂停
-	BMI088_WriteByte(0x00, 0x41, AccelWrite); // 设置量程为±3g
-	BMI088_WriteByte(0x89, 0x40, AccelWrite);
+	/*加速度计初始化*/
+	BMI088_WriteByte(BMI088_ACCEL_SOFTRESET_ADDR, BMI088_ACCEL_SOFTRESET_VAL, AccelWrite); // 向0x7E写入0xb6以软件复位加速度计
+	BMI088_WriteByte(BMI088_ACCEL_PWR_CTRL_ADDR, BMI088_ACCEL_PWR_CTRL_ON, AccelWrite);	   // 向0x7D写入0x04以取消加速度计暂停
+	BMI088_WriteByte(BMI088_ACCEL_RANGE_ADDR, BMI088_ACCEL_RANGE_3G, AccelWrite);		   // 设置量程为±3g
+	BMI088_WriteByte(BMI088_ACCEL_CONF_ADDR, BMI088_ACCEL_CONF_RESERVED << 7 | BMI088_ACCEL_CONF_BWP_OSR4 << 6 | BMI088_ACCEL_CONF_ODR_200_Hz, AccelWrite);
 
-	// 陀螺仪初始化
-	BMI088_WriteByte(0xB6, 0x14, GyroWrite); // 向0x14写入0xb6以软件复位陀螺仪
-	BMI088_WriteByte(0x00, 0x11, GyroWrite);
-	BMI088_WriteByte(GYRO_RANGE_500_DEG_S, GYRO_RANGE_ADDR, GyroWrite); // ±500
-	BMI088_WriteByte(GYRO_ODR_200Hz_BANDWIDTH_64Hz, GYRO_BANDWIDTH_ADDR, GyroWrite);
+	/*陀螺仪初始化*/
+	BMI088_WriteByte(BMI088_GYRO_SOFTRESET_ADDR, BMI088_GYRO_SOFTRESET_VAL, GyroWrite); // 向0x14写入0xb6以软件复位陀螺仪
+	BMI088_WriteByte(BMI088_GYRO_LPM1_ADDR, BMI088_GYRO_LPM1_NOR, GyroWrite);
+	BMI088_WriteByte(BMI088_GYRO_RANGE_ADDR, BMI088_GYRO_RANGE_500_DEG_S, GyroWrite); // ±500
+	BMI088_WriteByte(BMI088_GYRO_BANDWIDTH_ADDR, BMI088_GYRO_ODR_200Hz_BANDWIDTH_64Hz, GyroWrite);
 	return 0;
 }
 
@@ -165,7 +165,7 @@ void BMI088_ReadGyro(IMU_TypeDef *imu)
 /**
  * @brief 读取BMI088加速度计数据
  *
- * @param imu
+ * @param imu 保存数据的结构体
  */
 void BMI088_ReadAccel(IMU_TypeDef *imu)
 {
