@@ -22,6 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "Bsp_can.h"
+#include "Motor.h"
 /* USER CODE END 0 */
 
 CAN_HandleTypeDef hcan1;
@@ -147,6 +148,16 @@ void CanFilterConfig(void)
   can_filter.FilterFIFOAssignment = CAN_RX_FIFO0; // 过滤器关联到FIFO0
   HAL_CAN_ConfigFilter(&hcan1, &can_filter);      // 滤波器关联到CAN1
   can_filter.FilterBank = 15;                     // 滤波器组1
+}
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+  CAN_RxHeaderTypeDef rx_header;
+  uint8_t rx_data[8];
+  if (hcan == &hcan1)
+  {
+    HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &rx_header, rx_data);
+    Motor_ReceiveInfo(&motor_info[rx_header.StdId - 0x201], rx_data);
+  }
 }
 
 /* USER CODE END 1 */

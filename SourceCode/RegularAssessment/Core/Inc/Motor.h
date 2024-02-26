@@ -24,16 +24,16 @@ typedef struct
 /*电机编号*/
 typedef enum
 {
-    CHASSIS1,
-    CHASSIS2
+    MOTOR1,
+    MOTOR2
 } motor_number_t;
 
 extern motor_number_t motor_number;
-extern motor_info_t motor_info;
+extern motor_info_t motor_info[2];
 
-void Motor_Can_Init(void);     // 初始化电机CAN配置
-void Motor_TXInfo_Init(void);  // 初始化电机发送配置
-void Send_GimbalInfo(void);    // 发送云台信息
-void Receive_GimbalInfo(void); // 接收云台信息
+void Motor_Can_Init(void);                                       // 初始化电机CAN配置
+void Motor_TXInfo_Init(void);                                    // 初始化电机发送配置
+void Motor_SendInfo(void);                                       // 发送电机信息
+void Motor_ReceiveInfo(motor_info_t *motor_info, uint8_t *Data); // 接收电机信息
 
 #endif // _MOTOR_H__

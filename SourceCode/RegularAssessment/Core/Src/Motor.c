@@ -13,6 +13,7 @@
 #include "main.h"
 
 motor_info_t motor_info[2]; // 测试双电机
+
 /**
  * @brief 初始化电机CAN配置
  *
@@ -36,7 +37,7 @@ void Motor_TXInfo_Init(void)
  * @brief can发送电机信息
  *
  */
-void Send_MotorInfo(void)
+void Motor_SendInfo(void)
 {
     // Send_GimbalInfo
 }
@@ -44,7 +45,7 @@ void Send_MotorInfo(void)
  * @brief can发送电机信息
  *
  */
-void Receive_MotorInfo(void)
+void Motor_ReceiveInfo(motor_info_t *motor_info, uint8_t *Data)
 {
     // Receive_MotorInfo
 }
