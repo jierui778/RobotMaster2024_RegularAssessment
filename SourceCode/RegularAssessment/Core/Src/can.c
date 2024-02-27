@@ -134,7 +134,7 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef *canHandle)
  * @brief 配置CAN滤波器
  *
  */
-void CanFilterConfig(void)
+void CAN1_FilterConfig(void)
 {
   CAN_FilterTypeDef can_filter;
   can_filter.FilterBank = 0;
@@ -149,6 +149,11 @@ void CanFilterConfig(void)
   HAL_CAN_ConfigFilter(&hcan1, &can_filter);      // 滤波器关联到CAN1
   can_filter.FilterBank = 15;                     // 滤波器组1
 }
+/**
+ * @brief can发送中断回调函数
+ *
+ * @param hcan CAN句柄
+ */
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
   CAN_RxHeaderTypeDef rx_header;
