@@ -40,7 +40,7 @@ void MX_CAN1_Init(void)
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
   hcan1.Init.Prescaler = 6;
-  hcan1.Init.Mode = CAN_MODE_LOOPBACK;
+  hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
   hcan1.Init.TimeSeg1 = CAN_BS1_4TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
@@ -131,15 +131,15 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef *canHandle)
 /* USER CODE BEGIN 1 */
 
 /**
- * @brief 配置CAN滤波器
+ * @brief 配置CAN滤波�?
  *
  */
 void CAN1_FilterConfig(void)
 {
   CAN_FilterTypeDef can_filter;
   can_filter.FilterBank = 0;
-  can_filter.FilterActivation = ENABLE;           // 使能滤波器
-  can_filter.FilterMode = CAN_FILTERMODE_IDMASK;  // 屏蔽位模式
+  can_filter.FilterActivation = ENABLE;           // 使能滤波�?
+  can_filter.FilterMode = CAN_FILTERMODE_IDMASK;  // 屏蔽位模�?
   can_filter.FilterScale = CAN_FILTERSCALE_32BIT; // 32位滤波器
   can_filter.FilterIdHigh = 0x0000;               // 32位ID
   can_filter.FilterIdLow = 0x0000;                // 32位ID
@@ -150,7 +150,7 @@ void CAN1_FilterConfig(void)
   can_filter.FilterBank = 15;                     // 滤波器组1
 }
 /**
- * @brief can发送中断回调函数
+ * @brief can发�?�中断回调函�?
  *
  * @param hcan CAN句柄
  */
@@ -161,8 +161,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   if (hcan == &hcan1)
   {
     HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &rx_header, rx_data);
-    Motor_ReceiveInfo(&motor_info[rx_header.StdId - 0x201], rx_data);
+//    Motor_ReceiveInfo(&motor_info[rx_header.StdId - 0x201], rx_data);
   }
+  HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO0_MSG_PENDING);
 }
 
 /* USER CODE END 1 */

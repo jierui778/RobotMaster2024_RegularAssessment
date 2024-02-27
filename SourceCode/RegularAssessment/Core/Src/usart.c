@@ -24,7 +24,7 @@
 #include<stdarg.h>
 #include<stdio.h>
 #include<string.h>
-#include "stdio.h"
+#include <stdio.h>
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 #else
@@ -185,7 +185,7 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 void u1_printf(char* buf,...)
 {
 	const char *p = buf;
-	char str[1024] = {0};
+	char str[4096] = {0};
 	va_list v;
 	va_start(v,buf);
 	vsprintf(str,buf,v);

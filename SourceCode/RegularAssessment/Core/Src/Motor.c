@@ -12,9 +12,10 @@
 #include "can.h"
 #include "main.h"
 
-motor_info_t motor_info[2];  // 测试双电机
-motor_number_e motor_number; // 电机编号
-CAN_TxHeaderTypeDef motor_tx_header[3];
+motor_info_t motor_info[2];             // 测试双电机
+motor_num_e motor_number;               // 电机编号
+extern motor_id_e motor_id;             // 电机ID
+CAN_TxHeaderTypeDef motor_tx_header[2]; // 电机发送报文头
 /**
  * @brief 初始化电机CAN配置
  *
@@ -33,10 +34,14 @@ void Motor_Can_Init(void)
  */
 void Motor_TXInfo_Init(void)
 {
-    // Motor_TXInfo_Init
-    for (uint8_t i = 0; i < 3; i++)
+    for (size_t i = 0; i < 2; i++)
     {
+        motor_tx_header[i].IDE = CAN_ID_STD;   // 帧ID：标准帧
+        motor_tx_header[i].RTR = CAN_RTR_DATA; // 帧类型：数据帧
+        motor_tx_header[i].ExtId = 0x00;       // 扩展帧ID
+        motor_tx_header[i].DLC = 8;            // 数据长度
     }
+    motor_tx_header[GIMBAL].StdId = GIMBAL_TXID; // 电机报文标识符
 }
 /**
  * @brief 发送电压参数（范围：-30000 ~ 30000）
@@ -51,7 +56,7 @@ void Motor_SendInfo(int16_t motor1, uint16_t motor2)
     data[1] = motor1;
     data[2] = motor2 >> 8;
     data[3] = motor2;
-    // HAL_CAN_AddTxMessage(&hcan1, &motor_tx_header[motor_number], data, (uint32_t *)CAN_TX_MAILBOX0);
+    HAL_CAN_AddTxMessage(&hcan1, &motor_tx_header, data, (uint32_t *)CAN_TX_MAILBOX0);
 }
 /**
  * @brief 解析接收的can信息

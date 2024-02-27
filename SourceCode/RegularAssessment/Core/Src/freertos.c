@@ -32,6 +32,7 @@
 #include "semphr.h"
 #include "usart.h"
 #include "stdio.h"
+#include "Motor.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -236,10 +237,12 @@ void StartTask02(void *argument)
   /* Infinite loop */
   for (;;)
   {
-    //	printf("%d",test);
+    // printf("%d",test);
+    // u1_printf("%f",6.666);
     HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
     HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明系统正常运行
                                                     //    u1_printf("%d,%d,%d\n", -(int16_t)imu_data.angle[0], (int16_t)imu_data.angle[1], (int16_t)imu_data.angle[2]);
+    Motor_SendInfo(10000, 10000);
     // u1_printf("%.2f,%.2f,%.2f\n",-(int16_t)imu_data.angle_q[0],(int16_t)imu_data.angle_q[1],(int16_t)imu_data.angle_q[2]);
     //  HAL_UART_Transmit_DMA(&huart1, "RoboMaster\r\n", 12);
     //    u1_printf("%d,%d,%d",6,6,6);

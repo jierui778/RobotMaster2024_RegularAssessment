@@ -25,19 +25,24 @@ typedef struct
 /*电机编号*/
 typedef enum
 {
-    MOTOR1,
-    MOTOR2
-} motor_number_e;
-/*电机ID*/
+    GIMBAL1,
+    GIMBAL2
+} motor_num_e;
+/*电机类型*/
 typedef enum
 {
-    MOTOR1_ID = 0x201,
-    MOTOR2_ID = 0x202
+    GIMBAL
+} motor_txheader_num_e;
+/*电机的反馈报文标识符*/
+typedef enum
+{
+    GIMBAL_TXID = 0x2FF,
+    //
 } motor_id_e;
 
-extern motor_number_e motor_number; // 电机编号
-extern motor_id_e motor_id;         // 电机ID
-extern motor_info_t motor_info[2];  // 测试双电机
+extern motor_num_e motor_number;   // 电机编号
+extern motor_id_e motor_id;        // 电机ID
+extern motor_info_t motor_info[2]; // 测试双电机
 
 void Motor_Can_Init(void);                                       // 初始化电机CAN配置
 void Motor_TXInfo_Init(void);                                    // 初始化电机发送配置
