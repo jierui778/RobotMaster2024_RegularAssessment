@@ -59,37 +59,37 @@
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityNormal,
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for myTask02 */
 osThreadId_t myTask02Handle;
 const osThreadAttr_t myTask02_attributes = {
-    .name = "myTask02",
-    .stack_size = 512 * 4,
-    .priority = (osPriority_t)osPriorityLow6,
+  .name = "myTask02",
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityLow6,
 };
 /* Definitions for myTask03 */
 osThreadId_t myTask03Handle;
 const osThreadAttr_t myTask03_attributes = {
-    .name = "myTask03",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
+  .name = "myTask03",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for myTask04 */
 osThreadId_t myTask04Handle;
 const osThreadAttr_t myTask04_attributes = {
-    .name = "myTask04",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
+  .name = "myTask04",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for myTask05 */
 osThreadId_t myTask05Handle;
 const osThreadAttr_t myTask05_attributes = {
-    .name = "myTask05",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
+  .name = "myTask05",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -122,12 +122,11 @@ __weak unsigned long getRunTimeCounterValue(void)
 /* USER CODE END 1 */
 
 /**
- * @brief  FreeRTOS initialization
- * @param  None
- * @retval None
- */
-void MX_FREERTOS_Init(void)
-{
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
+void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -171,6 +170,7 @@ void MX_FREERTOS_Init(void)
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
+
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -193,16 +193,16 @@ void StartDefaultTask(void *argument)
     IST8310_Read(&imu_data);
     // SEGGER_RTT_printf(0, "segger !\n"); //测试RTT接口打印功能
     //    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
-    //    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运�?
+    //    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运�???
     //    osDelay(1000);
-    /* 对数据进行转换*/
+    /* 对数据进行转�??*/
     for (int i = 0; i < 3; i++)
     {
       imu_gyro[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180);
       imu_accel[i] = imu_data.accel[i] * 0.0008974f;
       imu_mag[i] = imu_data.mag[i] * 0.3;
     }
-    /*去零飘*/
+    /*去零�??*/
     imu_gyro[1] -= (11.5390333f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4231017f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4288017f / 65.536) * (PI / 180);
@@ -244,7 +244,7 @@ void StartTask02(void *argument)
     HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
     HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明系统正常运行
                                                     //    u1_printf("%d,%d,%d\n", -(int16_t)imu_data.angle[0], (int16_t)imu_data.angle[1], (int16_t)imu_data.angle[2]);
-    Gimbal_SendInfo(1000, 1000);
+    Gimbal_SendInfo(10000, 10000);
     // u1_printf("%.2f,%.2f,%.2f\n",-(int16_t)imu_data.angle_q[0],(int16_t)imu_data.angle_q[1],(int16_t)imu_data.angle_q[2]);
     //  HAL_UART_Transmit_DMA(&huart1, "RoboMaster\r\n", 12);
     //    u1_printf("%d,%d,%d",6,6,6);
@@ -272,15 +272,6 @@ void StartTask02(void *argument)
  * @retval None
  */
 /* USER CODE END Header_StartTask03 */
-// static bool memCmp(uint8_t *a, uint8_t *b, uint32_t count)
-// {
-//   volatile uint32_t i = 0;
-//   while (a[i] == b[i] && i < count)
-//   {
-//     i++;
-//   }
-//   return i == count;
-// }
 void StartTask03(void *argument)
 {
   /* USER CODE BEGIN StartTask03 */
@@ -316,10 +307,6 @@ void StartTask03(void *argument)
   }
   /* USER CODE END StartTask03 */
 }
-// void Vofa_SendDataCallBack(Vofa_HandleTypedef *handle, uint8_t *data, uint16_t length)
-// {
-//   HAL_UART_Transmit_DMA(&huart1, data, length);
-// }
 
 /* USER CODE BEGIN Header_StartTask04 */
 /**
@@ -361,3 +348,4 @@ void StartTask05(void *argument)
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
+

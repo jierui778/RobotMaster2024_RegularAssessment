@@ -40,9 +40,9 @@ typedef enum
     //
 } motor_id_e;
 
-extern motor_num_e motor_number;   // 电机编号
-extern motor_id_e motor_id;        // 电机ID
-extern motor_info_t motor_info[2]; // 测试双电机
+extern motor_num_e motor_number;    // 电机编号
+extern motor_id_e motor_id;         // 电机ID
+extern motor_info_t motor_info[10]; // 测试双电机
 
 void Motor_Can_Init(void);                                       // 初始化电机CAN配置
 void Motor_TXInfo_Init(void);                                    // 初始化电机发送配置
