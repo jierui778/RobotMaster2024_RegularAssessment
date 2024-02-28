@@ -63,3 +63,34 @@ SCNU 2024电控组转正考核任务
 </center>
 
 ## CAN总线电机的使用
+
+<details><summary>基本要求<em><b> </b> </em></summary>
+
+- 实现对电机正反转的控制
+- 实现对电机转速等信息的实时读取
+- 电机转速不起飞
+
+</details>
+
+## PID控制电机
+
+<details><summary>基本要求<em><b> </b> </em></summary>
+
+- 速度环：
+  - 稳态误差不超10%
+  - 上升时间[1]不超过0.6秒
+  - 最大超调量[2]20%
+- 角度环：
+  - 稳态误差不超20%
+  - 上升时间[1]不超过1秒
+  - 最大超调量[2]10%
+
+</details>
+
+## 使用FreeROTS进行调度
+
+<details><summary>基本要求<em><b> </b> </em></summary>
+
+- 使用FreeRTOS实现上述任务调度
+
+</details>
