@@ -65,7 +65,7 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+Vofa_HandleTypedef vofa1;
 
 /* USER CODE END 0 */
 
@@ -108,7 +108,7 @@ int main(void)
   BMI088_Init();
   SEGGER_RTT_Init();
   Motor_Can_Init();
-  //Vofa_Init(&vofa1, VOFA_MODE_SKIP);
+  Vofa_Init(&vofa1, VOFA_MODE_SKIP);
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
   //  printf("Hello World\n");
   //  uint8_t test[6]="testtt";

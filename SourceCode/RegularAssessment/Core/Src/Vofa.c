@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 static const uint8_t cmdTail[] = VOFA_CMD_TAIL;
-static const uint8_t justFloatTail[4] = {0x00, 0x00, 0x80, 0x7f};
+static const uint8_t justFloatTail[4] = {0x00, 0x00, 0x80, 0x7f}; // justfloat协议尾部
 
 void Vofa_Init(Vofa_HandleTypedef *handle, Vofa_ModeTypeDef mode)
 {
