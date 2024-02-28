@@ -31,7 +31,7 @@ typedef enum
 /*电机类型*/
 typedef enum
 {
-    GIMBAL
+    GIMBAL = 1,
 } motor_txheader_num_e;
 /*电机的反馈报文标识符*/
 typedef enum
@@ -46,7 +46,7 @@ extern motor_info_t motor_info[2]; // 测试双电机
 
 void Motor_Can_Init(void);                                       // 初始化电机CAN配置
 void Motor_TXInfo_Init(void);                                    // 初始化电机发送配置
-void Motor_SendInfo(int16_t motor1, uint16_t motor2);            // 发送电机信息
+void Gimbal_SendInfo(int16_t motor1, uint16_t motor2);           // 发送电机信息
 void Motor_ReceiveInfo(motor_info_t *motor_info, uint8_t *Data); // 接收电机信息
 
 #endif // _MOTOR_H__

@@ -34,7 +34,7 @@ void Motor_Can_Init(void)
  */
 void Motor_TXInfo_Init(void)
 {
-    for (size_t i = 0; i < 2; i++)
+    for (uint8_t i = 0; i < 2; i++)
     {
         motor_tx_header[i].IDE = CAN_ID_STD;   // 帧ID：标准帧
         motor_tx_header[i].RTR = CAN_RTR_DATA; // 帧类型：数据帧
@@ -49,14 +49,14 @@ void Motor_TXInfo_Init(void)
  * @param motor1 电机1的电压（范围：-30000 ~ 30000）
  * @param motor2 电机2的电压（范围：-30000 ~ 30000）
  */
-void Motor_SendInfo(int16_t motor1, uint16_t motor2)
+void Gimbal_SendInfo(int16_t motor1, uint16_t motor2)
 {
     uint8_t data[8] = {0};
     data[0] = motor1 >> 8;
     data[1] = motor1;
     data[2] = motor2 >> 8;
     data[3] = motor2;
-    HAL_CAN_AddTxMessage(&hcan1, &motor_tx_header, data, (uint32_t *)CAN_TX_MAILBOX0);
+    HAL_CAN_AddTxMessage(&hcan1, &motor_tx_header[GIMBAL], data, (uint32_t *)CAN_TX_MAILBOX0);
 }
 /**
  * @brief 解析接收的can信息

@@ -158,10 +158,9 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
   CAN_RxHeaderTypeDef rx_header;
   uint8_t rx_data[8];
-  if (hcan == &hcan1)
   {
     HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &rx_header, rx_data);
-//    Motor_ReceiveInfo(&motor_info[rx_header.StdId - 0x201], rx_data);
+    // Motor_ReceiveInfo(&motor_info[rx_header.StdId - 0x201], rx_data);
   }
   HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO0_MSG_PENDING);
 }
