@@ -15,12 +15,12 @@
 /*电机参数结构体*/
 typedef struct
 {
-    uint16_t target_angle;  // 目标角度
-    uint16_t angle;         // 当前角度
-    uint16_t taraget_speed; // 目标速度
-    uint16_t speed;         // 当前速度
-    uint16_t current;       // 电机电流
-    uint8_t temperature;    // 电机温度
+    uint16_t target_angle; // 目标角度
+    uint16_t angle;        // 当前角度
+    uint16_t target_speed; // 目标速度
+    uint16_t speed;        // 当前速度
+    uint16_t current;      // 电机电流
+    uint8_t temperature;   // 电机温度
 } motor_info_t;
 /*电机编号*/
 typedef enum
