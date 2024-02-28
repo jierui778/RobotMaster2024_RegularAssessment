@@ -33,6 +33,8 @@
 #include "usart.h"
 #include "stdio.h"
 #include "Motor.h"
+#include "Vofa.h"
+// #include "arm_math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -270,16 +272,54 @@ void StartTask02(void *argument)
  * @retval None
  */
 /* USER CODE END Header_StartTask03 */
+// static bool memCmp(uint8_t *a, uint8_t *b, uint32_t count)
+// {
+//   volatile uint32_t i = 0;
+//   while (a[i] == b[i] && i < count)
+//   {
+//     i++;
+//   }
+//   return i == count;
+// }
 void StartTask03(void *argument)
 {
   /* USER CODE BEGIN StartTask03 */
   /* Infinite loop */
+  // Vofa_HandleTypedef vofa1;
+  // static volatile float testData[5] = {0};
   for (;;)
   {
+    // static const uint8_t cmd_open[] = {0x00, 0x01, 0xAF, 0xFA};
+    // static const uint8_t cmd_close[] = {0x00, 0x00, 0xAF, 0xFA};
+    // static uint8_t cmdBuffer[10] = {0};
+    // if (Vofa_ReadCmd(&vofa1, cmdBuffer, 10))
+    // {
+    //   if (memCmp(cmdBuffer, (uint8_t *)cmd_open, sizeof(cmd_open)))
+    //   {
+    //     static float time = 0;
+    //     time += 0.0003f;
+    //     testData[0] = sin(time * 2 * PI);
+    //     testData[1] = sin(time * 2 * PI + 5);
+    //     testData[2] = sin(time * 2 * PI - 5);
+    //     testData[3] = sin(time * 4 * PI);
+    //     testData[4] = 2 * sin(time * 4 * PI);
+    //     Vofa_JustFloat(&vofa1, (float *)testData, 5);
+    //   }
+
+    //   if (memCmp(cmdBuffer, (uint8_t *)cmd_close, sizeof(cmd_close)))
+    //   {
+    //   }
+
+    //   memset(cmdBuffer, 0, 10);
+    // }
     osDelay(1);
   }
   /* USER CODE END StartTask03 */
 }
+// void Vofa_SendDataCallBack(Vofa_HandleTypedef *handle, uint8_t *data, uint16_t length)
+// {
+//   HAL_UART_Transmit_DMA(&huart1, data, length);
+// }
 
 /* USER CODE BEGIN Header_StartTask04 */
 /**

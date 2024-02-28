@@ -32,6 +32,7 @@
 #include "trcRecorder.h"
 #include "SEGGER_RTT.h"
 #include "remote.h"
+#include "Vofa.h"
 #include "stdio.h"
 
 /* USER CODE END Includes */
@@ -65,6 +66,7 @@ void MX_FREERTOS_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+
 /* USER CODE END 0 */
 
 /**
@@ -74,6 +76,7 @@ void MX_FREERTOS_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+  //Vofa_HandleTypedef vofa1;
 
   /* USER CODE END 1 */
 
@@ -105,6 +108,7 @@ int main(void)
   BMI088_Init();
   SEGGER_RTT_Init();
   Motor_Can_Init();
+  //Vofa_Init(&vofa1, VOFA_MODE_SKIP);
   HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
   //  printf("Hello World\n");
   //  uint8_t test[6]="testtt";
