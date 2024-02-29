@@ -106,18 +106,14 @@ int main(void)
   MX_CAN1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  IST8310_Init();
-  BMI088_Init();
-  SEGGER_RTT_Init();
-  Motor_Can_Init();
-  PID_Init();
-  Vofa_Init(&vofa1, VOFA_MODE_SKIP);
-  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
-  //  printf("Hello World\n");
-  //  uint8_t test[6]="testtt";
-  //  HAL_UART_Transmit(&huart1, test, 6, 0xffff);
-  vTraceEnable(TRC_START); // 启动任务跟踪
-
+  SEGGER_RTT_Init();                                                   // 初始化RTT
+  IST8310_Init();                                                      // 初始化磁力计
+  BMI088_Init();                                                       // 初始化IMU
+  Motor_Can_Init();                                                    // 初始化电机相关Can配置
+  PID_Init();                                                          // 初始化PID参数
+  Vofa_Init(&vofa1, VOFA_MODE_SKIP);                                   // 初始化Vofa
+  HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer)); // 使能DMA接收
+  vTraceEnable(TRC_START);                                             // TraceAlyzer启动任务跟踪
   /* USER CODE END 2 */
 
   /* Init scheduler */

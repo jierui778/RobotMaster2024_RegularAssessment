@@ -1,4 +1,4 @@
-/**
+/*
  * @file remote.c
  * @author jierui778 (758418101@qq.com)
  * @brief
@@ -16,7 +16,7 @@
 uint8_t rx_buffer[REMOTE_MAX_BUFFER_SIZE]; // 串口接收缓存
 uint8_t rx_len;                            // 串口接收数据长度
 extern DMA_HandleTypeDef hdma_usart1_rx;
-/**
+/*
  * @brief
  *
  * @param huart 串口句柄

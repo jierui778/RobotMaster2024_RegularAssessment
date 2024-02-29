@@ -1,4 +1,4 @@
-/**
+/*
  * @file Pid.c
  * @author jierui778 (758418101@qq.com)
  * @brief
@@ -15,23 +15,21 @@
 
 sPosiPID_Info PosiPID_Info[2];
 sIncrPID_Info IncrPID_Info[2];
-
-// Chassis1=0,Chassis2,Chassis3,Chassis4,frict_L,frict_R,Ammo,Chassis_Posi,Yaw,Pitch
-
+/*PID参数配置*/
 float PidInfo[2][2][5] = {
 	// PosiPID{Kp,Ki,Kd,MaxSum,MaxOutput}
 	{
 		{57.0f, 0, 0.3f, 28000, 28000},
 		// {115.0f, 0, 1.9f, 28000, 28000}, // GIMBAL1
-		{10.0f, 0, 0, 28000, 28000} // GIMBAL2
+		{0} // GIMBAL2
 	},
 	// IncrPID{Kp,Ki,Kd,MaxOutput,0}
 	{
-		{1.5f, 45.0f, 0, 28000, 28000}, // GIMBAL1
+		{2.8f, 45.0f, 0, 28000, 28000}, // GIMBAL1
 		{0}								// GIMBAL2
 	}};
 
-/**
+/*
  * @brief 对PID输出进行限幅
  *
  * @param value 输出值
@@ -48,7 +46,7 @@ void PIDInfo_Limit(float *value, float maxvalue)
 	}
 }
 
-/**
+/*
  * @brief 初始化PID参数
  *
  */
@@ -76,7 +74,7 @@ void PID_Init(void)
 	}
 }
 
-/**
+/*
  * @brief 位置式PID
  *
  * @param PosiPID_Info 位置式PID结构体
@@ -96,7 +94,7 @@ void PosiPID(sPosiPID_Info *PosiPID_Info, motor_info_t *MotorInfo)
 	PIDInfo_Limit(&PosiPID_Info->Output, PosiPID_Info->MaxOutput);
 }
 
-/**
+/*
  * @brief 增量式PID
  *
  * @param IncrPID_Info 增量式PID结构体
@@ -111,7 +109,7 @@ void IncrPID(sIncrPID_Info *IncrPID_Info, motor_info_t *MotorInfo)
 	PIDInfo_Limit(&IncrPID_Info->Output, IncrPID_Info->MaxOutput);
 }
 
-/**
+/*
  * @brief PID参数去初始化
  *
  */

@@ -292,7 +292,7 @@ void StartTask04(void *argument)
     // PosiPID(&PosiPID_Info[GIMBAL1], &motor_info[8]);
     motor_info[8].target_speed = 250 * sin(t * PI);
     IncrPID(&IncrPID_Info[GIMBAL1], &motor_info[8]);
-    Gimbal_SendInfo(IncrPID_Info[0].Output, 0);
+    Gimbal_SendInfo(20000, 0);
     osDelay(1);
   }
   /* USER CODE END StartTask04 */

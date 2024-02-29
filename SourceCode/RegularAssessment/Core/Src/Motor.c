@@ -1,4 +1,4 @@
-/**
+/*
  * @file Motor.c
  * @author jierui778 (758418101@qq.com)
  * @brief
@@ -16,7 +16,7 @@ motor_info_t motor_info[10];             // 测试双电机
 motor_num_e motor_number;               // 电机编号
 extern motor_id_e motor_id;             // 电机ID
 CAN_TxHeaderTypeDef motor_tx_header[2]; // 电机发送报文头
-/**
+/*
  * @brief 初始化电机CAN配置
  *
  */
@@ -28,7 +28,7 @@ void Motor_Can_Init(void)
     HAL_CAN_Start(&hcan1);                                             // 启动CAN1
     HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING); // 激活CAN1的接收中断
 }
-/**
+/*
  * @brief 初始化电机发送配置
  *
  */
@@ -43,7 +43,7 @@ void Motor_TXInfo_Init(void)
     }
     motor_tx_header[GIMBAL].StdId = GIMBAL_TXID; // 电机报文标识符
 }
-/**
+/*
  * @brief 发送电压参数（范围：-30000 ~ 30000）
  *
  * @param motor1 电机1的电压（范围：-30000 ~ 30000）
@@ -58,7 +58,7 @@ void Gimbal_SendInfo(int16_t motor1, uint16_t motor2)
     data[3] = motor2;
     HAL_CAN_AddTxMessage(&hcan1, &motor_tx_header[GIMBAL], data, (uint32_t *)CAN_TX_MAILBOX0);
 }
-/**
+/*
  * @brief 解析接收的can信息
  *
  * @param motor_info 电机数据

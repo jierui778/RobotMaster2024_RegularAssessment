@@ -11,9 +11,8 @@
 #include "stm32f4xx_hal.h"
 #ifndef __REMOTE_H
 #define __REMOTE_H
-#define REMOTE_MAX_BUFFER_SIZE 50
+#define REMOTE_MAX_BUFFER_SIZE 50 // 串口接收缓存大小
 extern uint8_t rx_len;
 extern uint8_t rx_buffer[REMOTE_MAX_BUFFER_SIZE];
-
 
 #endif
