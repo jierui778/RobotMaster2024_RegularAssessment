@@ -12,6 +12,7 @@
 #include "string.h"
 #include "usart.h"
 #include "stdio.h"
+#include "Vofa.h"
 uint8_t rx_buffer[REMOTE_MAX_BUFFER_SIZE]; // 串口接收缓存
 uint8_t rx_len;                            // 串口接收数据长度
 extern DMA_HandleTypeDef hdma_usart1_rx;
@@ -31,4 +32,10 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
         HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer)); // 重新启动DMA接收
         //__HAL_DMA_DISABLE(&hdma_usart1_rx); // 关闭DMA
     }
+}
+void Vofa_SendDataCallBack(Vofa_HandleTypedef *handle, uint8_t *data, uint16_t length)
+{
+    HAL_UART_Transmit(&huart1, data, length, 0xffff);
+    // while (HAL_BUSY == HAL_UART_GetState(&huart1))
+    ;
 }

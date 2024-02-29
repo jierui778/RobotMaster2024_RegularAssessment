@@ -63,19 +63,19 @@ const osThreadAttr_t defaultTask_attributes = {
     .stack_size = 128 * 4,
     .priority = (osPriority_t)osPriorityNormal,
 };
-/* Definitions for myTask02 */
-osThreadId_t myTask02Handle;
-const osThreadAttr_t myTask02_attributes = {
-    .name = "myTask02",
+/* Definitions for IMU_Read */
+osThreadId_t IMU_ReadHandle;
+const osThreadAttr_t IMU_Read_attributes = {
+    .name = "IMU_Read",
     .stack_size = 512 * 4,
     .priority = (osPriority_t)osPriorityLow6,
 };
-/* Definitions for myTask03 */
-osThreadId_t myTask03Handle;
-const osThreadAttr_t myTask03_attributes = {
-    .name = "myTask03",
+/* Definitions for TransmitInfo */
+osThreadId_t TransmitInfoHandle;
+const osThreadAttr_t TransmitInfo_attributes = {
+    .name = "TransmitInfo",
     .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
+    .priority = (osPriority_t)osPriorityHigh,
 };
 /* Definitions for myTask04 */
 osThreadId_t myTask04Handle;
@@ -98,8 +98,8 @@ const osThreadAttr_t myTask05_attributes = {
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
-void StartTask02(void *argument);
-void StartTask03(void *argument);
+void StartIMU_Read(void *argument);
+void Start_TransmitPIDInfo(void *argument);
 void StartTask04(void *argument);
 void StartTask05(void *argument);
 
@@ -152,11 +152,11 @@ void MX_FREERTOS_Init(void)
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* creation of myTask02 */
-  myTask02Handle = osThreadNew(StartTask02, NULL, &myTask02_attributes);
+  /* creation of IMU_Read */
+  IMU_ReadHandle = osThreadNew(StartIMU_Read, NULL, &IMU_Read_attributes);
 
-  /* creation of myTask03 */
-  myTask03Handle = osThreadNew(StartTask03, NULL, &myTask03_attributes);
+  /* creation of TransmitInfo */
+  TransmitInfoHandle = osThreadNew(Start_TransmitPIDInfo, NULL, &TransmitInfo_attributes);
 
   /* creation of myTask04 */
   myTask04Handle = osThreadNew(StartTask04, NULL, &myTask04_attributes);
@@ -184,6 +184,27 @@ void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
   /* Infinite loop */
+  for (;;)
+  {
+    SEGGER_RTT_printf(0, "SEGGER_Test_ok !\n");     // 测试RTT接口打印功能
+    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin); // LED闪烁表明系统在运�?
+    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin);
+    osDelay(1000);
+  }
+  /* USER CODE END StartDefaultTask */
+}
+
+/* USER CODE BEGIN Header_StartIMU_Read */
+/**
+ * @brief Function implementing the IMU_Read thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_StartIMU_Read */
+void StartIMU_Read(void *argument)
+{
+  /* USER CODE BEGIN StartIMU_Read */
+  /* Infinite loop */
   TickType_t xLastWakeTime;
   xLastWakeTime = xTaskGetTickCount(); // 获取当前时间
   for (;;)
@@ -191,18 +212,14 @@ void StartDefaultTask(void *argument)
     BMI088_ReadGyro(&imu_data);
     BMI088_ReadAccel(&imu_data);
     IST8310_Read(&imu_data);
-    // SEGGER_RTT_printf(0, "segger !\n"); //测试RTT接口打印功能
-    //    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
-    //    HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明任务在运�?????
-    //    osDelay(1000);
-    /* 对数据进行转�????*/
+    /* 对数据进行转�??????*/
     for (int i = 0; i < 3; i++)
     {
       imu_gyro[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180);
       imu_accel[i] = imu_data.accel[i] * 0.0008974f;
       imu_mag[i] = imu_data.mag[i] * 0.3;
     }
-    /*去零�????*/
+    /*去零�??????*/
     imu_gyro[1] -= (11.5390333f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4231017f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4288017f / 65.536) * (PI / 180);
@@ -219,84 +236,29 @@ void StartDefaultTask(void *argument)
     imu_data.angle[0] = (atan2(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[3]), 1 - 2.0f * (imu_data.angle_q[1] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[2]))) * 180 / PI;
     imu_data.angle[1] = asin(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[2] - imu_data.angle_q[1] * imu_data.angle_q[3])) * 180 / PI;
     imu_data.angle[2] = atan2(2 * imu_data.angle_q[1] * imu_data.angle_q[2] + 2 * imu_data.angle_q[0] * imu_data.angle_q[3], -2 * imu_data.angle_q[2] * imu_data.angle_q[2] - 2 * imu_data.angle_q[3] * imu_data.angle_q[3] + 1) * 180 / PI; // yaw
-    // HAL_UART_Transmit_DMA(&huart1, imu_data.angle[0], 12);
-    // osDelay(1);
-    vTaskDelayUntil(&xLastWakeTime, 1); // 任务延时1ms
+    vTaskDelayUntil(&xLastWakeTime, 1);                                                                                                                                                                                                      // 任务绝对延时1ms
   }
-  /* USER CODE END StartDefaultTask */
+  /* USER CODE END StartIMU_Read */
 }
 
-/* USER CODE BEGIN Header_StartTask02 */
+/* USER CODE BEGIN Header_Start_TransmitPIDInfo */
 /**
- * @brief Function implementing the myTask02 thread.
+ * @brief Function implementing the TransmitInfo thread.
  * @param argument: Not used
  * @retval None
  */
-/* USER CODE END Header_StartTask02 */
-void StartTask02(void *argument)
+/* USER CODE END Header_Start_TransmitPIDInfo */
+void Start_TransmitPIDInfo(void *argument)
 {
-  /* USER CODE BEGIN StartTask02 */
+  /* USER CODE BEGIN Start_TransmitPIDInfo */
   /* Infinite loop */
   for (;;)
   {
-    // printf("%d",test);
-    // u1_printf("%f",6.666);
-    // LED闪烁表明系统正常运行
-    // u1_printf("%d,%d,%d\n", -(int16_t)imu_data.angle[0], (int16_t)imu_data.angle[1], (int16_t)imu_data.angle[2]);
-    Gimbal_SendInfo(10000, 10000);
-    // u1_printf("%.2f,%.2f,%.2f\n",-(int16_t)imu_data.angle_q[0],(int16_t)imu_data.angle_q[1],(int16_t)imu_data.angle_q[2]);
-    //  HAL_UART_Transmit_DMA(&huart1, "RoboMaster\r\n", 12);
-    //    u1_printf("%d,%d,%d",6,6,6);
-
-    // HAL_UART_Transmit(&huart1, "RoboMaster\r\n", 12, 0xfff);
-    //  ret = CAN1_Send_Msg(txdata, 8);
-    //  if (ret == 0)
-    //    SEGGER_RTT_printf(0, "CAN Send success!\r\n");
-    //  else
-    //    SEGGER_RTT_printf(0, "CAN Send failed!\r\n");
-
-    // CAN1_Recv_Msg(rxdata);
-    // // SEGGER_RTT_printf(0, "+++++++++++++++++++++++++++++++\r\n");
-    // HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
-    // HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin); // LED闪烁表明系统正常运行
+    Vofa_HandleTypedef vofa1;
+    Vofa_JustFloat(&vofa1, imu_data.angle, 4);
     osDelay(1);
   }
-  /* USER CODE END StartTask02 */
-}
-
-/* USER CODE BEGIN Header_StartTask03 */
-/**
- * @brief Function implementing the myTask03 thread.
- * @param argument: Not used
- * @retval None
- */
-/* USER CODE END Header_StartTask03 */
-void Vofa_SendDataCallBack(Vofa_HandleTypedef *handle, uint8_t *data, uint16_t length)
-{
-  uint16_t i;
-  for (i = 0; i < length; i++)
-  {
-    HAL_UART_Transmit(&huart1, &data[i], 1, 0xffff);
-    while (HAL_BUSY == HAL_UART_GetState(&huart1))
-      ;
-  }
-}
-void StartTask03(void *argument)
-{
-  static float ch[4];
-  static uint8_t tail[4] = {0x00, 0x00, 0x80, 0x7f};
-
-  for (;;)
-  {
-    ch[0] = 8.888888888888;
-    ch[1] = 8.888888888888;
-    ch[2] = 8.888888888888;
-    ch[3] = 8.888888888888;
-    Vofa_HandleTypedef vofa1;
-    Vofa_JustFloat(&vofa1, (float *)ch, 4);
-    osDelay(100);
-  }
-  /* USER CODE END StartTask03 */
+  /* USER CODE END Start_TransmitPIDInfo */
 }
 
 /* USER CODE BEGIN Header_StartTask04 */
@@ -312,6 +274,7 @@ void StartTask04(void *argument)
   /* Infinite loop */
   for (;;)
   {
+    Gimbal_SendInfo(1000, 1000);
     osDelay(1);
   }
   /* USER CODE END StartTask04 */

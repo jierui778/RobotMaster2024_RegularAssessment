@@ -1,15 +1,25 @@
 /*
-	MIT License
-	Copyright (c) 2021 Jelin
-*/
-
+ * @file Vofa.c
+ * @author github@jelin-sh
+ * @brief
+ * @version 0.1
+ * @date 2024-02-29
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 #include "Vofa.h"
 #include <stdarg.h>
 #include <stdio.h>
 
 static const uint8_t cmdTail[] = VOFA_CMD_TAIL;
 static const uint8_t justFloatTail[4] = {0x00, 0x00, 0x80, 0x7f}; // justfloat协议尾部
-
+/*
+ * @brief
+ *
+ * @param handle
+ * @param mode
+ */
 void Vofa_Init(Vofa_HandleTypedef *handle, Vofa_ModeTypeDef mode)
 {
 	handle->rxBuffer.rp = handle->rxBuffer.buffer;
