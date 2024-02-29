@@ -124,15 +124,15 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 /* USER CODE BEGIN 1 */
 
 /**
- * @brief 配置CAN滤波�??
+ * @brief 配置CAN滤波�???
  *
  */
 void CAN1_FilterConfig(void)
 {
   CAN_FilterTypeDef can_filter;
   can_filter.FilterBank = 0;
-  can_filter.FilterActivation = ENABLE;           // 使能滤波�??
-  can_filter.FilterMode = CAN_FILTERMODE_IDMASK;  // 屏蔽位模�??
+  can_filter.FilterActivation = ENABLE;           // 使能滤波�???
+  can_filter.FilterMode = CAN_FILTERMODE_IDMASK;  // 屏蔽位模�???
   can_filter.FilterScale = CAN_FILTERSCALE_32BIT; // 32位滤波器
   can_filter.FilterIdHigh = 0x0000;               // 32位ID
   can_filter.FilterIdLow = 0x0000;                // 32位ID
@@ -143,7 +143,7 @@ void CAN1_FilterConfig(void)
   can_filter.FilterBank = 15;                     // 滤波器组1
 }
 /**
- * @brief can发�?�中断回调函�??
+ * @brief can发�?�中断回调函�???
  *
  * @param hcan CAN句柄
  */

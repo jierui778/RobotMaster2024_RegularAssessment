@@ -111,26 +111,22 @@
 #define IST8310_I2C_ADDR 0x0E // IST8310从机地址
 #define IST8310_ID 0x10		  // IST8310的ID号
 
-#define PI 3.1415926f
+#define PI 3.1415926535f // 圆周率
 
 typedef struct
 {
 	int16_t gyro[3];  // 陀螺仪
+	float gyro_f[3];  // 陀螺仪
 	int16_t accel[3]; // 加速度计
+	float accel_f[3]; // 加速度计
 	int16_t mag[3];	  // 磁力计
+	float mag_f[3];	  // 磁力计
 	float angle_q[4]; // 四元数
 	float angle[3];	  // 欧拉角
 	uint8_t temp;	  // 温度
 } IMU_TypeDef;
 
-typedef enum
-{
-	accel = 0,
-	gyro = 1
-} accel_or_gyro;
-
 extern IMU_TypeDef imu_data;
-extern float imu_gyro[3], imu_accel[3], imu_mag[3];
 uint8_t IST8310_Init(void);
 void IST8310_Read(IMU_TypeDef *imu);
 
@@ -138,5 +134,5 @@ uint8_t BMI088_Init(void);
 void BMI088_Read(IMU_TypeDef *imu);
 void BMI088_ReadGyro(IMU_TypeDef *imu);
 void BMI088_ReadAccel(IMU_TypeDef *imu);
-
+void IMU_ReadData(IMU_TypeDef *imu);
 #endif // __IMU_H

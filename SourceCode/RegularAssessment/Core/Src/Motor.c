@@ -14,7 +14,7 @@
 
 motor_info_t motor_info[10];             // 测试双电机
 motor_num_e motor_number;               // 电机编号
-extern motor_id_e motor_id;             // 电机ID
+motor_id_e motor_id;             // 电机ID
 CAN_TxHeaderTypeDef motor_tx_header[2]; // 电机发送报文头
 /*
  * @brief 初始化电机CAN配置
@@ -62,12 +62,12 @@ void Gimbal_SendInfo(int16_t motor1, uint16_t motor2)
  * @brief 解析接收的can信息
  *
  * @param motor_info 电机数据
- * @param Data 接收的数据
+ * @param data 接收的数据
  */
-void Motor_ReceiveInfo(motor_info_t *motor_info, uint8_t *Data)
+void Motor_ReceiveInfo(motor_info_t *motor_info, uint8_t *data)
 {
-    motor_info->angle = (Data[0] << 8) | Data[1];
-    motor_info->speed = (Data[2] << 8) | Data[3];
-    motor_info->current = (Data[4] << 8) | Data[5];
-    motor_info->temperature = Data[6];
+    motor_info->angle = (data[0] << 8) | data[1];
+    motor_info->speed = (data[2] << 8) | data[3];
+    motor_info->current = (data[4] << 8) | data[5];
+    motor_info->temperature = data[6];
 }

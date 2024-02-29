@@ -69,7 +69,7 @@ osThreadId_t IMU_ReadHandle;
 const osThreadAttr_t IMU_Read_attributes = {
     .name = "IMU_Read",
     .stack_size = 512 * 4,
-    .priority = (osPriority_t)osPriorityLow6,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 /* Definitions for TransmitInfo */
 osThreadId_t TransmitInfoHandle;
@@ -83,7 +83,7 @@ osThreadId_t myTask04Handle;
 const osThreadAttr_t myTask04_attributes = {
     .name = "myTask04",
     .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
+    .priority = (osPriority_t)osPriorityLow7,
 };
 /* Definitions for myTask05 */
 osThreadId_t myTask05Handle;
@@ -188,7 +188,7 @@ void StartDefaultTask(void *argument)
   for (;;)
   {
     SEGGER_RTT_printf(0, "SEGGER_Test_ok !\n");     // 测试RTT接口打印功能
-    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin); // LED闪烁表明系统在运�??
+    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin); // LED闪烁表明系统在运�????
     HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin);
     osDelay(1000);
   }
@@ -207,26 +207,12 @@ void StartIMU_Read(void *argument)
   /* USER CODE BEGIN StartIMU_Read */
   /* Infinite loop */
   TickType_t xLastWakeTime;
-  xLastWakeTime = xTaskGetTickCount(); // 获取当前时间
+  xLastWakeTime = xTaskGetTickCount(); // 获取当前时间绝对延时阻塞导致Can其他任务无法运行
   for (;;)
   {
-    BMI088_ReadGyro(&imu_data);
-    BMI088_ReadAccel(&imu_data);
-    IST8310_Read(&imu_data);
-    /* 对数据进行转�???????*/
-    for (int i = 0; i < 3; i++)
-    {
-      imu_gyro[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180);
-      imu_accel[i] = imu_data.accel[i] * 0.0008974f;
-      imu_mag[i] = imu_data.mag[i] * 0.3;
-    }
-    /*去零�???????*/
-    imu_gyro[1] -= (11.5390333f / 65.536) * (PI / 180);
-    imu_gyro[2] -= (10.4231017f / 65.536) * (PI / 180);
-    imu_gyro[2] -= (10.4288017f / 65.536) * (PI / 180);
-    //    imu_accel[1] -= (141.763613f * 0.0008974);
+    IMU_ReadData(&imu_data); // 读取IMU数据
 
-    MahonyAHRSupdateIMU(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2]); // 融合六轴数据
+    MahonyAHRSupdateIMU(imu_data.gyro_f[0], imu_data.gyro_f[1], imu_data.gyro_f[2], imu_data.accel_f[0], imu_data.accel_f[1], imu_data.accel_f[2]); // 融合六轴数据
     // MahonyAHRSupdate(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2], imu_mag[0], imu_mag[1], imu_mag[2]);//融合九轴数据
     imu_data.angle_q[0] = q0;
     imu_data.angle_q[1] = q1;
@@ -254,8 +240,7 @@ void Start_TransmitPIDInfo(void *argument)
   /* USER CODE BEGIN Start_TransmitPIDInfo */
   /* Infinite loop */
   static float temp[6];
-  TickType_t xLastWakeTime;
-  xLastWakeTime = xTaskGetTickCount(); // 获取当前时间
+
   for (;;)
   {
     Vofa_HandleTypedef vofa1;
@@ -266,7 +251,7 @@ void Start_TransmitPIDInfo(void *argument)
     temp[4] = motor_info[8].current;
     temp[5] = motor_info[8].temperature;
     Vofa_JustFloat(&vofa1, temp, 6);
-    vTaskDelayUntil(&xLastWakeTime, 10);
+    osDelay(10);
   }
   /* USER CODE END Start_TransmitPIDInfo */
 }
@@ -282,7 +267,7 @@ void StartTask04(void *argument)
 {
   /* USER CODE BEGIN StartTask04 */
   /* Infinite loop */
-  // xSemaphore_PIDInfoReady = xSemaphoreCreateBinary(); // 创建信号量
+  // xSemaphore_PIDInfoReady = xSemaphoreCreateBinary(); // 创建信号�??
   static float t = 0;
 
   for (;;)
@@ -293,7 +278,7 @@ void StartTask04(void *argument)
     motor_info[8].target_speed = 250 * sin(t * PI);
     IncrPID(&IncrPID_Info[GIMBAL1], &motor_info[8]);
     Gimbal_SendInfo(20000, 0);
-    osDelay(1);
+    osDelay(10);
   }
   /* USER CODE END StartTask04 */
 }
