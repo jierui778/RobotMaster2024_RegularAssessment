@@ -34,6 +34,7 @@
 #include "stdio.h"
 #include "Motor.h"
 #include "Vofa.h"
+#include "Pid.h"
 // #include "arm_math.h"
 /* USER CODE END Includes */
 
@@ -75,7 +76,7 @@ osThreadId_t TransmitInfoHandle;
 const osThreadAttr_t TransmitInfo_attributes = {
     .name = "TransmitInfo",
     .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityHigh,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 /* Definitions for myTask04 */
 osThreadId_t myTask04Handle;
@@ -187,7 +188,7 @@ void StartDefaultTask(void *argument)
   for (;;)
   {
     SEGGER_RTT_printf(0, "SEGGER_Test_ok !\n");     // 测试RTT接口打印功能
-    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin); // LED闪烁表明系统在运�?
+    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin); // LED闪烁表明系统在运�??
     HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin);
     osDelay(1000);
   }
@@ -212,14 +213,14 @@ void StartIMU_Read(void *argument)
     BMI088_ReadGyro(&imu_data);
     BMI088_ReadAccel(&imu_data);
     IST8310_Read(&imu_data);
-    /* 对数据进行转�??????*/
+    /* 对数据进行转�???????*/
     for (int i = 0; i < 3; i++)
     {
       imu_gyro[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180);
       imu_accel[i] = imu_data.accel[i] * 0.0008974f;
       imu_mag[i] = imu_data.mag[i] * 0.3;
     }
-    /*去零�??????*/
+    /*去零�???????*/
     imu_gyro[1] -= (11.5390333f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4231017f / 65.536) * (PI / 180);
     imu_gyro[2] -= (10.4288017f / 65.536) * (PI / 180);
@@ -252,11 +253,20 @@ void Start_TransmitPIDInfo(void *argument)
 {
   /* USER CODE BEGIN Start_TransmitPIDInfo */
   /* Infinite loop */
+  static float temp[6];
+  TickType_t xLastWakeTime;
+  xLastWakeTime = xTaskGetTickCount(); // 获取当前时间
   for (;;)
   {
     Vofa_HandleTypedef vofa1;
-    Vofa_JustFloat(&vofa1, imu_data.angle, 4);
-    osDelay(1);
+    temp[0] = motor_info[8].target_angle;
+    temp[1] = motor_info[8].angle;
+    temp[2] = motor_info[8].target_speed;
+    temp[3] = motor_info[8].speed;
+    temp[4] = motor_info[8].current;
+    temp[5] = motor_info[8].temperature;
+    Vofa_JustFloat(&vofa1, temp, 6);
+    vTaskDelayUntil(&xLastWakeTime, 10);
   }
   /* USER CODE END Start_TransmitPIDInfo */
 }
@@ -272,9 +282,17 @@ void StartTask04(void *argument)
 {
   /* USER CODE BEGIN StartTask04 */
   /* Infinite loop */
+  // xSemaphore_PIDInfoReady = xSemaphoreCreateBinary(); // 创建信号量
+  static float t = 0;
+
   for (;;)
   {
-    Gimbal_SendInfo(1000, 1000);
+    t += 0.005;
+    // motor_info[8].target_angle = 4000 + 3000 * sin(t * PI);
+    // PosiPID(&PosiPID_Info[GIMBAL1], &motor_info[8]);
+    motor_info[8].target_speed = 250 * sin(t * PI);
+    IncrPID(&IncrPID_Info[GIMBAL1], &motor_info[8]);
+    Gimbal_SendInfo(IncrPID_Info[0].Output, 0);
     osDelay(1);
   }
   /* USER CODE END StartTask04 */

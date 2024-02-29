@@ -21,13 +21,14 @@ sIncrPID_Info IncrPID_Info[2];
 float PidInfo[2][2][5] = {
 	// PosiPID{Kp,Ki,Kd,MaxSum,MaxOutput}
 	{
-		{10.0f, 0, 0, 28000, 28000}, // GIMBAL1
-		{0}							 // GIMBAL2
+		{57.0f, 0, 0.3f, 28000, 28000},
+		// {115.0f, 0, 1.9f, 28000, 28000}, // GIMBAL1
+		{10.0f, 0, 0, 28000, 28000} // GIMBAL2
 	},
 	// IncrPID{Kp,Ki,Kd,MaxOutput,0}
 	{
-		{1.0f, 5.0f, 0, 28000, 0}, // GIMBAL1
-		{0}						   // GIMBAL2
+		{1.5f, 45.0f, 0, 28000, 28000}, // GIMBAL1
+		{0}								// GIMBAL2
 	}};
 
 /**
