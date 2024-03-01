@@ -25,8 +25,7 @@ SCNU 2024电控组转正考核任务
 
 </details>
 
-- 采用DMA方式回传串口数据和数据长度如图
-<!--调整图片大小并居中显示-->
+- 采用DMA中断回调方式回传串口数据和数据长度如下：
 <center class ='img'>
 <img src="./gif/串口发送并回传不定长数据.gif"  width = 80%>
 </center>
@@ -62,11 +61,19 @@ SCNU 2024电控组转正考核任务
 <img src = "./gif/imu原始数据读取.gif" width = 80%>
 </center>
 
-- MahonyAHRS滤波解算效果及数据漂移
+- MahonyAHRS滤波解算欧拉角数据
 
 <center class = 'img'>
 <img src = "./gif/Mahony滤波3D演示.gif" width = 80%>
 </center>
+
+- MahonyAHRS滤波解算欧拉角3d演示
+
+<center class = 'img'>
+<img src = "./gif/Mahony滤波3D演示.gif" width = 80%>
+</center>
+
+
 
 ## CAN总线电机的使用
 
@@ -77,6 +84,8 @@ SCNU 2024电控组转正考核任务
 - [x] 电机转速不起飞
 
 </details>
+
+- 驱动电机测试转动如下：
 
 ## PID控制电机
 
@@ -93,12 +102,27 @@ SCNU 2024电控组转正考核任务
 
 </details>
 
+- 角度环测试：（**位置式PID**）
+  - note
+  - note
+- 速度环测试：（**增量式PID**）
+  - note
+  - note
+
 ## 使用FreeROTS进行调度
+- 基本要求 
+  - [x] 使用FreeRTOS实现上述任务调度
 
-<details><summary>基本要求<em><b> </b> </em></summary>
+- TraceAlyzer监测系统任务：
 
-- 使用FreeRTOS实现上述任务调度
 
-</details>
+
+[//]: # (# &#40;MahonyAHRS滤波解算欧拉角3d演示&#41;)
+<video width="320" height="240" controls>
+    <source src="https://youtu.be/dUVCnUy78-g" type="video/mp4">
+</video>
+
+
+# [更多的测试视频]()
 
 
