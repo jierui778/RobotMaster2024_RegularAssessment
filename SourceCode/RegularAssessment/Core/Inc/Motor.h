@@ -8,11 +8,18 @@
  * @copyright Copyright (c) 2024
  *
  */
-#ifndef _MOTOR_H__
-#define _MOTOR_H__
+#ifndef MOTOR_H_
+#define MOTOR_H_
 #include "main.h"
 
 /*电机参数结构体*/
+// target_angle：目标角度
+// angle：当前角度
+// target_speed：目标速度
+// speed：当前速度
+// current：电机电流
+// temperature：电机温度
+
 typedef struct
 {
     uint16_t target_angle; // 目标角度
@@ -23,17 +30,23 @@ typedef struct
     uint8_t temperature;   // 电机温度
 } motor_info_t;
 /*电机编号*/
+// GIMBAL1：云台电机1
+// GIMBAL2：云台电机2
 typedef enum
 {
     GIMBAL1,
     GIMBAL2
 } motor_num_e;
 /*电机类型*/
+// GIMBAL：云台电机
+// CHASSIS：底盘电机
 typedef enum
 {
     GIMBAL = 1,
+    CHASSIS,
 } motor_txheader_num_e;
 /*电机的反馈报文标识符*/
+// GIMBAL_TXID：云台电机的报文标识符
 typedef enum
 {
     GIMBAL_TXID = 0x2FF,

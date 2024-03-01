@@ -8,8 +8,8 @@
  * @copyright Copyright (c) 2024
  *
  */
-#ifndef __PID_H__
-#define __PID_H__
+#ifndef PID_H
+#define PID_H
 
 #include "Motor.h"
 /*位置式PID参数结构体*/

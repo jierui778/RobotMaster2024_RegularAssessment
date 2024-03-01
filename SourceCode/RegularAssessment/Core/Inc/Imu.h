@@ -8,9 +8,14 @@
  * @copyright Copyright (c) 2024
  *
  */
-#ifndef _IMU_H_
-#define _IMU_H_
+#ifndef IMU_H
+#define IMU_H
 #include "main.h"
+
+#ifndef PI
+#define PI 3.1415926535f
+#endif
+
 /*BMI088寄存器地址*/
 #define BMI088_CHIP_ID_ADDR 0X00
 
@@ -110,8 +115,6 @@
 
 #define IST8310_I2C_ADDR 0x0E // IST8310从机地址
 #define IST8310_ID 0x10		  // IST8310的ID号
-
-#define PI 3.1415926535f // 圆周率
 
 typedef struct
 {

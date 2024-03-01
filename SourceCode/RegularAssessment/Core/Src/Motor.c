@@ -12,9 +12,9 @@
 #include "can.h"
 #include "main.h"
 
-motor_info_t motor_info[10];             // 测试双电机
+motor_info_t motor_info[10];            // 测试双电机
 motor_num_e motor_number;               // 电机编号
-motor_id_e motor_id;             // 电机ID
+motor_id_e motor_id;                    // 电机ID
 CAN_TxHeaderTypeDef motor_tx_header[2]; // 电机发送报文头
 /*
  * @brief 初始化电机CAN配置
