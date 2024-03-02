@@ -273,11 +273,14 @@ void StartTask04(void *argument)
   for (;;)
   {
     t += 0.005;
-    // motor_info[8].target_angle = 4000 + 3000 * sin(t * PI);
-    // PosiPID(&PosiPID_Info[GIMBAL1], &motor_info[8]);
+    motor_info[8].target_angle = 4000 + 4000 * sin(t * PI);
+    PosiPID(&PosiPID_Info[GIMBAL1], &motor_info[8]);
+    Gimbal_SendInfo(PosiPID_Info[0].Output, 0);
+
     motor_info[8].target_speed = 250 * sin(t * PI);
     IncrPID(&IncrPID_Info[GIMBAL1], &motor_info[8]);
-    Gimbal_SendInfo(20000, 0);
+    Gimbal_SendInfo(IncrPID_Info[GIMBAL1].output, 0);
+
     osDelay(10);
   }
   /* USER CODE END StartTask04 */
