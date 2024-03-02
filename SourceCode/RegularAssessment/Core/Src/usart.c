@@ -21,10 +21,11 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-#include<stdarg.h>
-#include<stdio.h>
-#include<string.h>
+#include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdio.h>
+#include "Vofa.h"
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 #else
@@ -69,18 +70,17 @@ void MX_USART1_UART_Init(void)
   /* USER CODE BEGIN USART1_Init 2 */
 
   /* USER CODE END USART1_Init 2 */
-
 }
 
-void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
+void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if(uartHandle->Instance==USART1)
+  if (uartHandle->Instance == USART1)
   {
-  /* USER CODE BEGIN USART1_MspInit 0 */
+    /* USER CODE BEGIN USART1_MspInit 0 */
 
-  /* USER CODE END USART1_MspInit 0 */
+    /* USER CODE END USART1_MspInit 0 */
     /* USART1 clock enable */
     __HAL_RCC_USART1_CLK_ENABLE();
 
@@ -121,7 +121,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
       Error_Handler();
     }
 
-    __HAL_LINKDMA(uartHandle,hdmarx,hdma_usart1_rx);
+    __HAL_LINKDMA(uartHandle, hdmarx, hdma_usart1_rx);
 
     /* USART1_TX Init */
     hdma_usart1_tx.Instance = DMA2_Stream7;
@@ -139,25 +139,25 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
       Error_Handler();
     }
 
-    __HAL_LINKDMA(uartHandle,hdmatx,hdma_usart1_tx);
+    __HAL_LINKDMA(uartHandle, hdmatx, hdma_usart1_tx);
 
     /* USART1 interrupt Init */
     HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);
-  /* USER CODE BEGIN USART1_MspInit 1 */
+    /* USER CODE BEGIN USART1_MspInit 1 */
 
-  /* USER CODE END USART1_MspInit 1 */
+    /* USER CODE END USART1_MspInit 1 */
   }
 }
 
-void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
+void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
 {
 
-  if(uartHandle->Instance==USART1)
+  if (uartHandle->Instance == USART1)
   {
-  /* USER CODE BEGIN USART1_MspDeInit 0 */
+    /* USER CODE BEGIN USART1_MspDeInit 0 */
 
-  /* USER CODE END USART1_MspDeInit 0 */
+    /* USER CODE END USART1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_USART1_CLK_DISABLE();
 
@@ -175,22 +175,56 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
     /* USART1 interrupt Deinit */
     HAL_NVIC_DisableIRQ(USART1_IRQn);
-  /* USER CODE BEGIN USART1_MspDeInit 1 */
+    /* USER CODE BEGIN USART1_MspDeInit 1 */
 
-  /* USER CODE END USART1_MspDeInit 1 */
+    /* USER CODE END USART1_MspDeInit 1 */
   }
 }
 
 /* USER CODE BEGIN 1 */
-void u1_printf(char* buf,...)
+void u1_printf(char *buf, ...)
 {
-	const char *p = buf;
-	char str[4096] = {0};
-	va_list v;
-	va_start(v,buf);
-	vsprintf(str,buf,v);
-    HAL_UART_Transmit(&huart1, str, strlen(str), HAL_MAX_DELAY);
-    va_end(v);
+  const char *p = buf;
+  char str[4096] = {0};
+  va_list v;
+  va_start(v, buf);
+  vsprintf(str, buf, v);
+  HAL_UART_Transmit(&huart1, str, strlen(str), HAL_MAX_DELAY);
+  va_end(v);
+}
+
+uint8_t rx_buffer[MAX_BUFFER_SIZE]; // 串口接收缓存
+uint8_t rx_len;                     // 串口接收数据长度
+extern DMA_HandleTypeDef hdma_usart1_rx;
+/*
+ * @brief
+ *
+ * @param huart 串口句柄
+ * @param Size 接收到的数据长度
+ */
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+  if (huart == &huart1)
+  {
+    HAL_UART_Transmit_DMA(&huart1, rx_buffer, Size);
+    // HAL_UART_Transmit_DMA(&huart1, &Size, 2);
+    //  通过DMA回传的数据
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer)); // 重新启动DMA接收
+                                                                         //__HAL_DMA_DISABLE(&hdma_usart1_rx); // 关闭DMA
+  }
+}
+/*
+ * @brief Vofa数据发送回调函数
+ *
+ * @param handle Vofa句柄
+ * @param data 数据指针
+ * @param length 数据长度
+ */
+void Vofa_SendDataCallBack(Vofa_HandleTypedef *handle, uint8_t *data, uint16_t length)
+{
+  HAL_UART_Transmit(&huart1, data, length, 0xffff);
+  // while (HAL_BUSY == HAL_UART_GetState(&huart1))
+  // ;
 }
 
 /* USER CODE END 1 */

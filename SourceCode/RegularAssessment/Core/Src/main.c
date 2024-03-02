@@ -31,7 +31,6 @@
 #include "Imu.h"
 #include "trcRecorder.h"
 #include "SEGGER_RTT.h"
-#include "remote.h"
 #include "Vofa.h"
 #include "stdio.h"
 #include "Motor.h"

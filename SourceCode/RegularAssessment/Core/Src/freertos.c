@@ -60,37 +60,30 @@
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-    .name = "defaultTask",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityNormal,
+  .name = "defaultTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
 /* Definitions for IMU_Read */
 osThreadId_t IMU_ReadHandle;
 const osThreadAttr_t IMU_Read_attributes = {
-    .name = "IMU_Read",
-    .stack_size = 512 * 4,
-    .priority = (osPriority_t)osPriorityNormal,
+  .name = "IMU_Read",
+  .stack_size = 512 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for TransmitInfo */
-osThreadId_t TransmitInfoHandle;
-const osThreadAttr_t TransmitInfo_attributes = {
-    .name = "TransmitInfo",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityNormal,
+/* Definitions for PIDInfo_Transmi */
+osThreadId_t PIDInfo_TransmiHandle;
+const osThreadAttr_t PIDInfo_Transmi_attributes = {
+  .name = "PIDInfo_Transmi",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityNormal,
 };
-/* Definitions for myTask04 */
-osThreadId_t myTask04Handle;
-const osThreadAttr_t myTask04_attributes = {
-    .name = "myTask04",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow7,
-};
-/* Definitions for myTask05 */
-osThreadId_t myTask05Handle;
-const osThreadAttr_t myTask05_attributes = {
-    .name = "myTask05",
-    .stack_size = 128 * 4,
-    .priority = (osPriority_t)osPriorityLow,
+/* Definitions for PID_Control */
+osThreadId_t PID_ControlHandle;
+const osThreadAttr_t PID_Control_attributes = {
+  .name = "PID_Control",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow7,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -100,9 +93,8 @@ const osThreadAttr_t myTask05_attributes = {
 
 void StartDefaultTask(void *argument);
 void StartIMU_Read(void *argument);
-void Start_TransmitPIDInfo(void *argument);
-void StartTask04(void *argument);
-void StartTask05(void *argument);
+void StartPIDInfo_Transmit(void *argument);
+void StartPID_Control(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -123,12 +115,11 @@ __weak unsigned long getRunTimeCounterValue(void)
 /* USER CODE END 1 */
 
 /**
- * @brief  FreeRTOS initialization
- * @param  None
- * @retval None
- */
-void MX_FREERTOS_Init(void)
-{
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
+void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -156,14 +147,11 @@ void MX_FREERTOS_Init(void)
   /* creation of IMU_Read */
   IMU_ReadHandle = osThreadNew(StartIMU_Read, NULL, &IMU_Read_attributes);
 
-  /* creation of TransmitInfo */
-  TransmitInfoHandle = osThreadNew(Start_TransmitPIDInfo, NULL, &TransmitInfo_attributes);
+  /* creation of PIDInfo_Transmi */
+  PIDInfo_TransmiHandle = osThreadNew(StartPIDInfo_Transmit, NULL, &PIDInfo_Transmi_attributes);
 
-  /* creation of myTask04 */
-  myTask04Handle = osThreadNew(StartTask04, NULL, &myTask04_attributes);
-
-  /* creation of myTask05 */
-  myTask05Handle = osThreadNew(StartTask05, NULL, &myTask05_attributes);
+  /* creation of PID_Control */
+  PID_ControlHandle = osThreadNew(StartPID_Control, NULL, &PID_Control_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -172,6 +160,7 @@ void MX_FREERTOS_Init(void)
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
+
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -187,9 +176,11 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for (;;)
   {
-    SEGGER_RTT_printf(0, "SEGGER_Test_ok !\n");     // 测试RTT接口打印功能
+    SEGGER_RTT_printf(0, "SEGGER_Test_ok !\n"); // 测试RTT打印功能
+
     HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin); // LED闪烁表明系统在运�????
     HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin);
+    HAL_GPIO_TogglePin(LED_B_GPIO_Port, LED_B_Pin);
     osDelay(1000);
   }
   /* USER CODE END StartDefaultTask */
@@ -210,37 +201,24 @@ void StartIMU_Read(void *argument)
   xLastWakeTime = xTaskGetTickCount(); // 获取当前时间绝对延时阻塞导致Can其他任务无法运行
   for (;;)
   {
-    IMU_ReadData(&imu_data); // 读取IMU数据
-
-    MahonyAHRSupdateIMU(imu_data.gyro_f[0], imu_data.gyro_f[1], imu_data.gyro_f[2], imu_data.accel_f[0], imu_data.accel_f[1], imu_data.accel_f[2]); // 融合六轴数据
-    // MahonyAHRSupdate(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2], imu_mag[0], imu_mag[1], imu_mag[2]);//融合九轴数据
-    imu_data.angle_q[0] = q0;
-    imu_data.angle_q[1] = q1;
-    imu_data.angle_q[2] = q2;
-    imu_data.angle_q[3] = q3;
-
-    // 四元数计算欧拉角
-    imu_data.angle[0] = (atan2(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[3]), 1 - 2.0f * (imu_data.angle_q[1] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[2]))) * 180 / PI;
-    imu_data.angle[1] = asin(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[2] - imu_data.angle_q[1] * imu_data.angle_q[3])) * 180 / PI;
-    imu_data.angle[2] = atan2(2 * imu_data.angle_q[1] * imu_data.angle_q[2] + 2 * imu_data.angle_q[0] * imu_data.angle_q[3], -2 * imu_data.angle_q[2] * imu_data.angle_q[2] - 2 * imu_data.angle_q[3] * imu_data.angle_q[3] + 1) * 180 / PI; // yaw
-    vTaskDelayUntil(&xLastWakeTime, 1);                                                                                                                                                                                                      // 任务绝对延时1ms
+    IMU_ReadData(&imu_data);
+    vTaskDelayUntil(&xLastWakeTime, 1); // 任务延时1ms
   }
   /* USER CODE END StartIMU_Read */
 }
 
-/* USER CODE BEGIN Header_Start_TransmitPIDInfo */
+/* USER CODE BEGIN Header_StartPIDInfo_Transmit */
 /**
- * @brief Function implementing the TransmitInfo thread.
+ * @brief Function implementing the PIDInfo_Transmi thread.
  * @param argument: Not used
  * @retval None
  */
-/* USER CODE END Header_Start_TransmitPIDInfo */
-void Start_TransmitPIDInfo(void *argument)
+/* USER CODE END Header_StartPIDInfo_Transmit */
+void StartPIDInfo_Transmit(void *argument)
 {
-  /* USER CODE BEGIN Start_TransmitPIDInfo */
+  /* USER CODE BEGIN StartPIDInfo_Transmit */
   /* Infinite loop */
   static float temp[6];
-
   for (;;)
   {
     Vofa_HandleTypedef vofa1;
@@ -253,58 +231,41 @@ void Start_TransmitPIDInfo(void *argument)
     Vofa_JustFloat(&vofa1, temp, 6);
     osDelay(10);
   }
-  /* USER CODE END Start_TransmitPIDInfo */
+  /* USER CODE END StartPIDInfo_Transmit */
 }
 
-/* USER CODE BEGIN Header_StartTask04 */
+/* USER CODE BEGIN Header_StartPID_Control */
 /**
- * @brief Function implementing the myTask04 thread.
- * @param argument: Not used
- * @retval None
- */
-/* USER CODE END Header_StartTask04 */
-void StartTask04(void *argument)
+* @brief Function implementing the PID_Control thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartPID_Control */
+void StartPID_Control(void *argument)
 {
-  /* USER CODE BEGIN StartTask04 */
+  /* USER CODE BEGIN StartPID_Control */
   /* Infinite loop */
-  // xSemaphore_PIDInfoReady = xSemaphoreCreateBinary(); // 创建信号�??
   static float t = 0;
-
   for (;;)
   {
     t += 0.005;
-    motor_info[8].target_angle = 4000 + 4000 * sin(t * PI);
-    PosiPID(&PosiPID_Info[GIMBAL1], &motor_info[8]);
-    Gimbal_SendInfo(PosiPID_Info[0].Output, 0);
+    /*角度环*/
+    // motor_info[8].target_angle = 4000 + 4000 * sin(t * PI);
+    // PosiPID(&PosiPID_Info[GIMBAL1], &motor_info[8]);
+    // Gimbal_SendInfo(PosiPID_Info[0].Output, 0);
 
-    motor_info[8].target_speed = 250 * sin(t * PI);
-    IncrPID(&IncrPID_Info[GIMBAL1], &motor_info[8]);
-    Gimbal_SendInfo(IncrPID_Info[GIMBAL1].output, 0);
+    /*速度环*/
+    // motor_info[8].target_speed = 250 * sin(t * PI);
+    // IncrPID(&IncrPID_Info[GIMBAL1], &motor_info[8]);
+    // Gimbal_SendInfo(IncrPID_Info[GIMBAL1].Output, 0);
 
-    osDelay(10);
-  }
-  /* USER CODE END StartTask04 */
-}
-
-/* USER CODE BEGIN Header_StartTask05 */
-/**
- * @brief Function implementing the myTask05 thread.
- * @param argument: Not used
- * @retval None
- */
-/* USER CODE END Header_StartTask05 */
-void StartTask05(void *argument)
-{
-  /* USER CODE BEGIN StartTask05 */
-  /* Infinite loop */
-  for (;;)
-  {
     osDelay(1);
   }
-  /* USER CODE END StartTask05 */
+  /* USER CODE END StartPID_Control */
 }
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
+

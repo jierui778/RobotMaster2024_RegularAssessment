@@ -19,15 +19,14 @@
 // speed：当前速度
 // current：电机电流
 // temperature：电机温度
-
 typedef struct
 {
-    uint16_t target_angle; // 目标角度
-    uint16_t angle;        // 当前角度
-    int16_t target_speed;  // 目标速度
-    int16_t speed;         // 当前速度
-    int16_t current;       // 电机电流
-    uint8_t temperature;   // 电机温度
+    uint16_t target_angle;
+    uint16_t angle;
+    int16_t target_speed;
+    int16_t speed;
+    int16_t current;
+    uint8_t temperature;
 } motor_info_t;
 /*电机编号*/
 // GIMBAL1：云台电机1

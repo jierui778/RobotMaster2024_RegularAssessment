@@ -12,6 +12,7 @@
 #include "i2c.h"
 #include "spi.h"
 #include "main.h"
+#include "MahonyAHRS.h"
 
 enum BMI088_WriteMode
 {
@@ -71,7 +72,13 @@ void IST8310_Read(IMU_TypeDef *imu)
 	imu->mag[1] = buf[2] + (buf[3] << 8);
 	imu->mag[2] = buf[4] + (buf[5] << 8);
 }
-
+/*
+ * @brief 向BMI088写入一个字节
+ *
+ * @param addr 寄存器地址
+ * @param data 要写入的数据
+ * @param a_enum 写入模式
+ */
 static void BMI088_WriteByte(uint8_t addr, uint8_t data, enum BMI088_WriteMode a_enum)
 {
 	uint8_t spi_TxData;
@@ -216,7 +223,7 @@ void IMU_ReadData(IMU_TypeDef *imu)
 	BMI088_ReadAccel(imu);
 	BMI088_ReadGyro(imu);
 	// BMI088_ReadTemp(imu);
-	/*对数据进行转换*/
+	/*对原始数据进行转换*/
 	for (int i = 0; i < 3; i++)
 	{
 		imu_data.gyro_f[i] = (imu_data.gyro[i]) / 65.536 * (PI / 180); // 单位：rad/s
@@ -224,8 +231,21 @@ void IMU_ReadData(IMU_TypeDef *imu)
 		imu_data.mag_f[i] = imu_data.mag[i] * 0.3;					   // 单位：uT
 
 		imu_data.gyro_f[1] -= (11.5390333f / 65.536) * (PI / 180);
-		imu_data.gyro_f[2] -= (10.4231017f / 65.536) * (PI / 180);
-		imu_data.gyro_f[2] -= (10.4288017f / 65.536) * (PI / 180);
+		imu_data.gyro_f[2] -= (22.4231017f / 65.536) * (PI / 180);
+		//imu_data.accel_f[1] -= (50.846753f / 65.536) * (PI / 180);
 	}
-	// IST8310_Read(imu);
+
+	MahonyAHRSupdateIMU(imu_data.gyro_f[0], imu_data.gyro_f[1], imu_data.gyro_f[2], imu_data.accel_f[0], imu_data.accel_f[1], imu_data.accel_f[2]); // Mahony融合六轴数据
+	// MahonyAHRSupdate(imu_gyro[0], imu_gyro[1], imu_gyro[2], imu_accel[0], imu_accel[1], imu_accel[2], imu_mag[0], imu_mag[1], imu_mag[2]);//融合九轴数据
+
+	/*获取四元数*/
+	imu_data.angle_q[0] = q0;
+	imu_data.angle_q[1] = q1;
+	imu_data.angle_q[2] = q2;
+	imu_data.angle_q[3] = q3;
+
+	// 四元数计算欧拉角
+	imu_data.angle[0] = (atan2(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[3]), 1 - 2.0f * (imu_data.angle_q[1] * imu_data.angle_q[1] + imu_data.angle_q[2] * imu_data.angle_q[2]))) * 180 / PI;
+	imu_data.angle[1] = asin(2.0f * (imu_data.angle_q[0] * imu_data.angle_q[2] - imu_data.angle_q[1] * imu_data.angle_q[3])) * 180 / PI;
+	imu_data.angle[2] = atan2(2 * imu_data.angle_q[1] * imu_data.angle_q[2] + 2 * imu_data.angle_q[0] * imu_data.angle_q[3], -2 * imu_data.angle_q[2] * imu_data.angle_q[2] - 2 * imu_data.angle_q[3] * imu_data.angle_q[3] + 1) * 180 / PI; // yaw
 }

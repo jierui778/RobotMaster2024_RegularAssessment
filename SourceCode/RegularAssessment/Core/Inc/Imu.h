@@ -119,10 +119,10 @@
 typedef struct
 {
 	int16_t gyro[3];  // 陀螺仪
-	float gyro_f[3];  // 陀螺仪
 	int16_t accel[3]; // 加速度计
-	float accel_f[3]; // 加速度计
 	int16_t mag[3];	  // 磁力计
+	float gyro_f[3];  // 陀螺仪
+	float accel_f[3]; // 加速度计
 	float mag_f[3];	  // 磁力计
 	float angle_q[4]; // 四元数
 	float angle[3];	  // 欧拉角
