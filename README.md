@@ -58,19 +58,19 @@ SCNU 2024电控组转正考核任务
 - 原始数据读取
 
 <center class = 'img'>
-<img src = "./gif/imu原始数据读取.gif" width = 80%>
+<img src = "./gif/imu原始数据读取.gif" width = 70%>
 </center>
 
-- MahonyAHRS滤波解算欧拉角数据
+- MahonyAHRS解算欧拉角数据分析（仅对陀螺仪进行去零漂，静止状态下yaw角一分钟飘2度左右）
 
 <center class = 'img'>
-<img src = "./gif/Mahony滤波3D演示.gif" width = 80%>
+<img src = "./gif/Mahony数据分析.png" width = 70%>
 </center>
 
-- MahonyAHRS滤波解算欧拉角3d演示
+- MahonyAHRS解算欧拉角3d演示
 
 <center class = 'img'>
-<img src = "./gif/Mahony滤波3D演示.gif" width = 80%>
+<img src = "./gif/Mahony滤波3D演示.gif" width = 70%>
 </center>
 
 
@@ -85,7 +85,7 @@ SCNU 2024电控组转正考核任务
 
 </details>
 
-- 驱动电机测试转动如下：
+- 演示省略
 
 ## PID控制电机
 
@@ -103,55 +103,58 @@ SCNU 2024电控组转正考核任务
 </details>
 
 - 角度环测试：（**位置式PID**）
-  - 无负载的正弦式角度变化测试：
+  - **无负载的正弦式**角度变化测试：
 
   <center class ='img'>
   <img src="./dataset/无负载正弦角度整体跟随情况.png"  width = 70%>
   </center>
 
-  - 有负载的正弦式角度变化测试：
+  - **有负载的正弦式**角度变化测试：
   <center class ='img'>
   <img src="./dataset/模拟负载正弦角度整体跟随情况.png"  width = 70%>
   </center>
 
-  - 无负载的阶跃式角度变化测试：
+  - **无负载的阶跃式**角度变化测试：
   <center class ='img'>
   <img src="./dataset/无负载阶跃信号角度整体跟随情况.png"  width = 70%>
   </center>
 
-  - 有负载的阶跃式角度变化测试：
+  - **有负载的阶跃式**角度变化测试：
   <center class ='img'>
   <img src="./dataset/模拟负载阶跃信号角度整体跟随情况.png"  width = 70%>
   </center>
 
 - 速度环测试：（**增量式PID**）
-  - 无负载的正弦式速度变化测试：
+  - **无负载的正弦式**速度变化测试：
 
   <center class ='img'>
   <img src="./dataset/无负载正弦速度整体跟随情况.png"  width = 70%>
   </center>
 
-  - 有负载的正弦式速度变化测试：
+  - **有负载的正弦式**速度变化测试：
 
   <center class ='img'>
   <img src="./dataset/模拟负载正弦速度整体跟随情况.png"  width = 70%>
   </center>
 
-  - 无负载的阶跃式速度变化测试：
+  - **无负载的阶跃式**速度变化测试：
 
   <center class ='img'>
   <img src="./dataset/无负载阶跃信号角度整体跟随情况.png"  width = 70%>
   </center>
 
-  - 有负载的阶跃式速度变化测试：
+  - **有负载的阶跃式**速度变化测试：
   <center class ='img'>
   <img src="./dataset/无负载阶跃信号速度整体跟随情况.png"  width = 70%>
   </center>
 
 ## 使用FreeROTS进行调度
-- 基本要求 
-  - [x] 使用FreeRTOS实现上述任务调度
+- 基本要求
+  - [x] FreeRTOS实现上述任务调度
 
 - TraceAlyzer监测系统任务调度情况：
+  <center class ='img'>
+  <img src="./gif/trace.png"  width = 70%>
+  </center>
 
-
+#[相关测试数据集](./dataset)
