@@ -83,7 +83,7 @@ osThreadId_t PID_ControlHandle;
 const osThreadAttr_t PID_Control_attributes = {
   .name = "PID_Control",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow7,
+  .priority = (osPriority_t) osPriorityNormal1,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -178,7 +178,7 @@ void StartDefaultTask(void *argument)
   {
     SEGGER_RTT_printf(0, "SEGGER_Test_ok !\n"); // 测试RTT打印功能
 
-    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin); // LED闪烁表明系统在运�????
+    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin); // LED闪烁表明系统在运�?????
     HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin);
     HAL_GPIO_TogglePin(LED_B_GPIO_Port, LED_B_Pin);
     osDelay(1000);
@@ -249,12 +249,12 @@ void StartPID_Control(void *argument)
   for (;;)
   {
     t += 0.005;
-    /*角度环*/
+    /*角度�?*/
     // motor_info[8].target_angle = 4000 + 4000 * sin(t * PI);
     // PosiPID(&PosiPID_Info[GIMBAL1], &motor_info[8]);
     // Gimbal_SendInfo(PosiPID_Info[0].Output, 0);
 
-    /*速度环*/
+    /*速度�?*/
     // motor_info[8].target_speed = 250 * sin(t * PI);
     // IncrPID(&IncrPID_Info[GIMBAL1], &motor_info[8]);
     // Gimbal_SendInfo(IncrPID_Info[GIMBAL1].Output, 0);
