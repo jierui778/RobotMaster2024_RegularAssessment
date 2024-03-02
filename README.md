@@ -103,26 +103,55 @@ SCNU 2024电控组转正考核任务
 </details>
 
 - 角度环测试：（**位置式PID**）
-  - note
-  - note
+  - 无负载的正弦式角度变化测试：
+
+  <center class ='img'>
+  <img src="./dataset/无负载正弦角度整体跟随情况.png"  width = 70%>
+  </center>
+
+  - 有负载的正弦式角度变化测试：
+  <center class ='img'>
+  <img src="./dataset/模拟负载正弦角度整体跟随情况.png"  width = 70%>
+  </center>
+
+  - 无负载的阶跃式角度变化测试：
+  <center class ='img'>
+  <img src="./dataset/无负载阶跃信号角度整体跟随情况.png"  width = 70%>
+  </center>
+
+  - 有负载的阶跃式角度变化测试：
+  <center class ='img'>
+  <img src="./dataset/模拟负载阶跃信号角度整体跟随情况.png"  width = 70%>
+  </center>
+
 - 速度环测试：（**增量式PID**）
-  - note
-  - note
+  - 无负载的正弦式速度变化测试：
+
+  <center class ='img'>
+  <img src="./dataset/无负载正弦速度整体跟随情况.png"  width = 70%>
+  </center>
+
+  - 有负载的正弦式速度变化测试：
+
+  <center class ='img'>
+  <img src="./dataset/模拟负载正弦速度整体跟随情况.png"  width = 70%>
+  </center>
+
+  - 无负载的阶跃式速度变化测试：
+
+  <center class ='img'>
+  <img src="./dataset/无负载阶跃信号角度整体跟随情况.png"  width = 70%>
+  </center>
+
+  - 有负载的阶跃式速度变化测试：
+  <center class ='img'>
+  <img src="./dataset/无负载阶跃信号速度整体跟随情况.png"  width = 70%>
+  </center>
 
 ## 使用FreeROTS进行调度
 - 基本要求 
   - [x] 使用FreeRTOS实现上述任务调度
 
-- TraceAlyzer监测系统任务：
-
-
-
-[//]: # (# &#40;MahonyAHRS滤波解算欧拉角3d演示&#41;)
-<video width="320" height="240" controls>
-    <source src="https://youtu.be/dUVCnUy78-g" type="video/mp4">
-</video>
-
-
-# [更多的测试视频]()
+- TraceAlyzer监测系统任务调度情况：
 
 
