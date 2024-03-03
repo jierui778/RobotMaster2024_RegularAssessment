@@ -60,30 +60,30 @@
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "defaultTask",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 /* Definitions for IMU_Read */
 osThreadId_t IMU_ReadHandle;
 const osThreadAttr_t IMU_Read_attributes = {
-  .name = "IMU_Read",
-  .stack_size = 512 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "IMU_Read",
+    .stack_size = 512 * 4,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 /* Definitions for PIDInfo_Transmi */
 osThreadId_t PIDInfo_TransmiHandle;
 const osThreadAttr_t PIDInfo_Transmi_attributes = {
-  .name = "PIDInfo_Transmi",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
+    .name = "PIDInfo_Transmi",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityNormal,
 };
 /* Definitions for PID_Control */
 osThreadId_t PID_ControlHandle;
 const osThreadAttr_t PID_Control_attributes = {
-  .name = "PID_Control",
-  .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityNormal1,
+    .name = "PID_Control",
+    .stack_size = 128 * 4,
+    .priority = (osPriority_t)osPriorityNormal1,
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -115,11 +115,12 @@ __weak unsigned long getRunTimeCounterValue(void)
 /* USER CODE END 1 */
 
 /**
-  * @brief  FreeRTOS initialization
-  * @param  None
-  * @retval None
-  */
-void MX_FREERTOS_Init(void) {
+ * @brief  FreeRTOS initialization
+ * @param  None
+ * @retval None
+ */
+void MX_FREERTOS_Init(void)
+{
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -160,7 +161,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
   /* USER CODE END RTOS_EVENTS */
-
 }
 
 /* USER CODE BEGIN Header_StartDefaultTask */
@@ -176,9 +176,9 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for (;;)
   {
-    SEGGER_RTT_printf(0, "SEGGER_Test_ok !\n"); // 测试RTT打印功能
+    SEGGER_RTT_printf(0, "SEGGER_Test_ok !\n"); // ??RTT
 
-    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin); // LED闪烁表明系统在运�?????
+    HAL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin); // led??????????
     HAL_GPIO_TogglePin(LED_R_GPIO_Port, LED_R_Pin);
     HAL_GPIO_TogglePin(LED_B_GPIO_Port, LED_B_Pin);
     osDelay(1000);
@@ -198,11 +198,11 @@ void StartIMU_Read(void *argument)
   /* USER CODE BEGIN StartIMU_Read */
   /* Infinite loop */
   TickType_t xLastWakeTime;
-  xLastWakeTime = xTaskGetTickCount(); // 获取当前时间绝对延时阻塞导致Can其他任务无法运行
+  xLastWakeTime = xTaskGetTickCount(); // 获取当前时间
   for (;;)
   {
     IMU_ReadData(&imu_data);
-    vTaskDelayUntil(&xLastWakeTime, 1); // 任务延时1ms
+    vTaskDelayUntil(&xLastWakeTime, 1); // 系统延时1ms
   }
   /* USER CODE END StartIMU_Read */
 }
@@ -222,13 +222,14 @@ void StartPIDInfo_Transmit(void *argument)
   for (;;)
   {
     Vofa_HandleTypedef vofa1;
-    temp[0] = motor_info[8].target_angle;
-    temp[1] = motor_info[8].angle;
-    temp[2] = motor_info[8].target_speed;
-    temp[3] = motor_info[8].speed;
-    temp[4] = motor_info[8].current;
-    temp[5] = motor_info[8].temperature;
-    Vofa_JustFloat(&vofa1, temp, 6);
+    temp[0] = motor_info[GIMBAL1].target_angle;
+    temp[1] = motor_info[GIMBAL1].angle;
+    temp[2] = motor_info[GIMBAL1].target_speed;
+    temp[3] = motor_info[GIMBAL1].speed;
+    temp[4] = motor_info[GIMBAL1].current;
+    temp[5] = motor_info[GIMBAL1].temperature;
+
+    Vofa_JustFloat(&vofa1, temp, sizeof(temp) / sizeof(temp[0]));
     osDelay(10);
   }
   /* USER CODE END StartPIDInfo_Transmit */
@@ -236,10 +237,10 @@ void StartPIDInfo_Transmit(void *argument)
 
 /* USER CODE BEGIN Header_StartPID_Control */
 /**
-* @brief Function implementing the PID_Control thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the PID_Control thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_StartPID_Control */
 void StartPID_Control(void *argument)
 {
@@ -249,12 +250,13 @@ void StartPID_Control(void *argument)
   for (;;)
   {
     t += 0.005;
-    /*角度�?*/
+    
+    /*角度环*/
     // motor_info[8].target_angle = 4000 + 4000 * sin(t * PI);
     // PosiPID(&PosiPID_Info[GIMBAL1], &motor_info[8]);
     // Gimbal_SendInfo(PosiPID_Info[0].Output, 0);
 
-    /*速度�?*/
+    /*速度环*/
     // motor_info[8].target_speed = 250 * sin(t * PI);
     // IncrPID(&IncrPID_Info[GIMBAL1], &motor_info[8]);
     // Gimbal_SendInfo(IncrPID_Info[GIMBAL1].Output, 0);
@@ -268,4 +270,3 @@ void StartPID_Control(void *argument)
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
-

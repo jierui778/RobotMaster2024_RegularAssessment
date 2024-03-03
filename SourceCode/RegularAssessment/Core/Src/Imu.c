@@ -232,7 +232,7 @@ void IMU_ReadData(IMU_TypeDef *imu)
 
 		imu_data.gyro_f[1] -= (11.5390333f / 65.536) * (PI / 180);
 		imu_data.gyro_f[2] -= (22.4231017f / 65.536) * (PI / 180);
-		//imu_data.accel_f[1] -= (50.846753f / 65.536) * (PI / 180);
+		// imu_data.accel_f[1] -= (50.846753f / 65.536) * (PI / 180);
 	}
 
 	MahonyAHRSupdateIMU(imu_data.gyro_f[0], imu_data.gyro_f[1], imu_data.gyro_f[2], imu_data.accel_f[0], imu_data.accel_f[1], imu_data.accel_f[2]); // Mahony融合六轴数据

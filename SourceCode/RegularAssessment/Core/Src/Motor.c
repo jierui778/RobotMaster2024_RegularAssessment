@@ -12,7 +12,7 @@
 #include "can.h"
 #include "main.h"
 
-motor_info_t motor_info[10];            // 测试双电机
+motor_info_t motor_info[2];            // 测试双电机
 motor_num_e motor_number;               // 电机编号
 motor_id_e motor_id;                    // 电机ID
 CAN_TxHeaderTypeDef motor_tx_header[2]; // 电机发送报文头
@@ -49,7 +49,7 @@ void Motor_TXInfo_Init(void)
  * @param motor1 电机1的电压（范围：-30000 ~ 30000）
  * @param motor2 电机2的电压（范围：-30000 ~ 30000）
  */
-void Gimbal_SendInfo(int16_t motor1, uint16_t motor2)
+void Gimbal_SendInfo(int16_t motor1, int16_t motor2)
 {
     uint8_t data[8] = {0};
     data[0] = motor1 >> 8;

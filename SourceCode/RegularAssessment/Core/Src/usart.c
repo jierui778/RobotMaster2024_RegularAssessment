@@ -208,13 +208,11 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   {
     HAL_UART_Transmit_DMA(&huart1, rx_buffer, Size);
     // HAL_UART_Transmit_DMA(&huart1, &Size, 2);
-    //  通过DMA回传的数据
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer)); // 重新启动DMA接收
-                                                                         //__HAL_DMA_DISABLE(&hdma_usart1_rx); // 关闭DMA
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
   }
 }
 /*
- * @brief Vofa数据发送回调函数
+ * @brief Vofa数据发�?�回调函�?
  *
  * @param handle Vofa句柄
  * @param data 数据指针
@@ -222,7 +220,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
  */
 void Vofa_SendDataCallBack(Vofa_HandleTypedef *handle, uint8_t *data, uint16_t length)
 {
-  HAL_UART_Transmit(&huart1, data, length, 0xffff);
+  HAL_UART_Transmit(&huart1, data, length, HAL_MAX_DELAY);
   // while (HAL_BUSY == HAL_UART_GetState(&huart1))
   // ;
 }

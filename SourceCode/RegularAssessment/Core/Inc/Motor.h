@@ -53,12 +53,12 @@ typedef enum
 } motor_id_e;
 
 extern motor_num_e motor_number;    // 电机编号
-extern motor_id_e motor_id;         // 电机ID
-extern motor_info_t motor_info[10]; // 测试双电机
+extern motor_id_e motor_id;         // 电机控制报文标识符
+extern motor_info_t motor_info[2]; // 测试双电机
 
 void Motor_Can_Init(void);                                       // 初始化电机CAN配置
 void Motor_TXInfo_Init(void);                                    // 初始化电机发送配置
-void Gimbal_SendInfo(int16_t motor1, uint16_t motor2);           // 发送电机信息
+void Gimbal_SendInfo(int16_t motor1, int16_t motor2);            // 发送电机信息
 void Motor_ReceiveInfo(motor_info_t *motor_info, uint8_t *Data); // 接收电机信息
 
 #endif // _MOTOR_H__
