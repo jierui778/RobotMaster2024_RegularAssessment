@@ -193,14 +193,14 @@ void u1_printf(char *buf, ...)
   va_end(v);
 }
 
-uint8_t rx_buffer[MAX_BUFFER_SIZE]; // 串口接收缓存
-uint8_t rx_len;                     // 串口接收数据长度
+uint8_t rx_buffer[MAX_BUFFER_SIZE]; // ?????
+uint8_t rx_len;                     // ??????
 extern DMA_HandleTypeDef hdma_usart1_rx;
 /*
- * @brief
+ * @brief UART????????
  *
- * @param huart 串口句柄
- * @param Size 接收到的数据长度
+ * @param huart UART??
+ * @param Size ????????
  */
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
@@ -212,11 +212,11 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
   }
 }
 /*
- * @brief Vofa数据发�?�回调函�?
+ * @brief Vofa????????
  *
- * @param handle Vofa句柄
- * @param data 数据指针
- * @param length 数据长度
+ * @param handle Vofa??
+ * @param data ????
+ * @param length ????
  */
 void Vofa_SendDataCallBack(Vofa_HandleTypedef *handle, uint8_t *data, uint16_t length)
 {

@@ -123,28 +123,28 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef *canHandle)
 /* USER CODE BEGIN 1 */
 
 /**
- * @brief ??CAN???
+ * @brief CAN1滤波器配置
  *
  */
 void CAN1_FilterConfig(void)
 {
   CAN_FilterTypeDef can_filter;
   can_filter.FilterBank = 0;
-  can_filter.FilterActivation = ENABLE;           // ?????
-  can_filter.FilterMode = CAN_FILTERMODE_IDMASK;  // ????????
-  can_filter.FilterScale = CAN_FILTERSCALE_32BIT; // 32????
-  can_filter.FilterIdHigh = 0x0000;               // 32?ID
-  can_filter.FilterIdLow = 0x0000;                // 32?ID
-  can_filter.FilterMaskIdHigh = 0x0000;           // 32???????
-  can_filter.FilterMaskIdLow = 0x0000;            // 32???????
-  can_filter.FilterFIFOAssignment = CAN_RX_FIFO0; // ?FIFO0?????
-  HAL_CAN_ConfigFilter(&hcan1, &can_filter);      // ??????CAN1
-  can_filter.FilterBank = 15;                     // ?????1
+  can_filter.FilterActivation = ENABLE;           // 启用滤波器
+  can_filter.FilterMode = CAN_FILTERMODE_IDMASK;  // 滤波器模式：标识符掩码模式
+  can_filter.FilterScale = CAN_FILTERSCALE_32BIT; // 32位滤波器
+  can_filter.FilterIdHigh = 0x0000;               // 32位ID
+  can_filter.FilterIdLow = 0x0000;                // 32位ID
+  can_filter.FilterMaskIdHigh = 0x0000;           // 32位掩码
+  can_filter.FilterMaskIdLow = 0x0000;            // 32位掩码
+  can_filter.FilterFIFOAssignment = CAN_RX_FIFO0; // 将滤波器分配给FIFO0
+  HAL_CAN_ConfigFilter(&hcan1, &can_filter);      // 为CAN1配置滤波器
+  can_filter.FilterBank = 15;                     // 滤波器组1
 }
 /**
- * @brief can1??FIFO0????????
+ * @brief 处理CAN1 RX FIFO0消息挂起回调
  *
- * @param hcan can??
+ * @param hcan CAN句柄
  */
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
@@ -153,7 +153,7 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
   if (hcan == &hcan1)
   {
     HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &rx_header, rx_data);
-    Motor_ReceiveInfo(&motor_info[rx_header.StdId - 0x209], rx_data); // ??????
+    Motor_ReceiveInfo(&motor_info[rx_header.StdId - 0x209], rx_data); // 处理接收到的数据
   }
   HAL_CAN_ActivateNotification(hcan, CAN_IT_RX_FIFO0_MSG_PENDING);
 }
